@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Manual de OpenWerkstatt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: workshop manual – fixed table of contents on the left, reading column on the right; single column with collapsible contents on phones */
+:root {
+  --bg: #f3f5f7;
+  --paper: #ffffff;
+  --ink: #18212b;
+  --muted: #5a6876;
+  --line: #d7dde3;
+  --accent: #1d5c9e;
+  --accent-soft: #e3edf8;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --ok: #1f7a4d;
+  --ok-soft: #e1f3e9;
+  --code-bg: #eef1f4;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", Consolas, "Cascadia Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151b; --paper: #161e26; --ink: #e3e9ef; --muted: #98a6b4; --line: #2a3541;
+    --accent: #6ea8e6; --accent-soft: #1a2b3d; --warn: #e8b05a; --warn-soft: #2e2416;
+    --ok: #63c592; --ok-soft: #15291f; --code-bg: #1d2731; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151b; --paper: #161e26; --ink: #e3e9ef; --muted: #98a6b4; --line: #2a3541;
+  --accent: #6ea8e6; --accent-soft: #1a2b3d; --warn: #e8b05a; --warn-soft: #2e2416;
+  --ok: #63c592; --ok-soft: #15291f; --code-bg: #1d2731; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.shell { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; padding-block: 40px 80px; }
+
+/* header */
+.masthead { grid-column: 1 / -1; display: grid; gap: 10px; padding-bottom: 28px; border-bottom: 3px solid var(--ink); }
+.masthead .kicker { font-family: var(--f-mono); font-size: 13px; color: var(--muted); letter-spacing: .04em; }
+.masthead h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(44px, 7vw, 76px); line-height: .95; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.masthead p { margin: 0; max-width: 62ch; color: var(--muted); font-size: 19px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 500; }
+
+/* table of contents */
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); align-self: start; max-height: calc(100vh - 40px); overflow-y: auto; font-size: 15px; }
+nav.toc .label { font-family: var(--f-display); font-weight: 600; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; display: grid; gap: 1px; }
+nav.toc li { counter-increment: toc; }
+nav.toc a { display: grid; grid-template-columns: 26px 1fr; padding: 4px 8px; border-left: 2px solid var(--line); color: var(--ink); text-decoration: none; }
+nav.toc a::before { content: counter(toc, decimal-leading-zero); font-family: var(--f-mono); font-size: 11px; color: var(--muted); padding-top: 4px; }
+nav.toc a:hover { background: var(--accent-soft); }
+nav.toc a.active { border-left-color: var(--accent); color: var(--accent); font-weight: 600; }
+details.toc-mobile { display: none; }
+
+/* content */
+main { min-width: 0; display: grid; gap: 56px; }
+section { display: grid; gap: 14px; min-width: 0; }
+section > h2 { font-family: var(--f-display); font-weight: 700; font-size: 36px; line-height: 1.05; margin: 0; display: flex; align-items: baseline; gap: 12px; text-wrap: balance; }
+section > h2 .no { font-family: var(--f-mono); font-size: 14px; font-weight: 500; color: var(--accent); }
+h3 { font-family: var(--f-display); font-weight: 600; font-size: 24px; margin: 14px 0 0; line-height: 1.15; }
+h4 { font-size: 17px; margin: 6px 0 0; }
+p, ul, ol { margin: 0; max-width: 68ch; }
+ul, ol { padding-left: 22px; display: grid; gap: 4px; }
+.lead { font-size: 19px; }
+.path { font-weight: 600; white-space: nowrap; }
+.path::before { content: "▸ "; color: var(--accent); font-weight: 400; }
+kbd { font-family: var(--f-mono); font-size: 13px; padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--paper); white-space: nowrap; }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.codeblock { position: relative; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; max-width: 100%; }
+.codeblock pre { margin: 0; padding: 14px 16px; overflow-x: auto; font-family: var(--f-mono); font-size: 13.5px; line-height: 1.55; }
+.codeblock pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.copy { position: absolute; top: 6px; right: 6px; font: 500 12px var(--f-body); color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 3px 8px; cursor: pointer; }
+.copy:hover { color: var(--accent); border-color: var(--accent); }
+
+.tablewrap { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { white-space: nowrap; }
+
+.note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 6px 6px 0; max-width: 72ch; display: grid; gap: 6px; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note.ok { border-color: var(--ok); background: var(--ok-soft); }
+.note strong:first-child { font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+.note.warn strong:first-child { color: var(--warn); }
+.note.ok strong:first-child { color: var(--ok); }
+.note:not(.warn):not(.ok) strong:first-child { color: var(--accent); }
+
+.steps { list-style: none; padding: 0; counter-reset: st; display: grid; gap: 12px; }
+.steps > li { counter-increment: st; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
+.steps > li::before { content: counter(st); width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); font: 700 15px var(--f-mono); display: grid; place-items: center; }
+.steps > li > div { display: grid; gap: 4px; min-width: 0; }
+
+.modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.module { background: var(--paper); padding: 16px 18px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.module h3 { margin: 0; font-size: 22px; }
+.module .where { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.module ul { font-size: 15.5px; }
+
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.compare > div { border: 1px solid var(--line); border-radius: 6px; background: var(--paper); padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.compare h4 { margin: 0; font-family: var(--f-display); font-size: 21px; font-weight: 600; }
+.compare .tag { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+
+.diagram { border: 1px solid var(--line); border-radius: 6px; background: var(--paper); padding: 16px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.diagram svg text { font-family: var(--f-body); fill: var(--ink); }
+.diagram svg .sub { fill: var(--muted); font-size: 12px; }
+.diagram svg .box { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+.diagram svg .box.main { fill: var(--accent-soft); stroke: var(--accent); }
+.diagram svg .wire { stroke: var(--accent); stroke-width: 2; fill: none; }
+.diagram svg .wire.dash { stroke-dasharray: 5 4; stroke: var(--muted); }
+.diagram svg .arrow { fill: var(--accent); }
+
+dl.faq { margin: 0; display: grid; gap: 14px; max-width: 72ch; }
+dl.faq dt { font-weight: 700; }
+dl.faq dd { margin: 4px 0 0; color: var(--ink); }
+
+footer { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 18px; font-size: 14px; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 24px 60px; }
+  nav.toc { display: none; }
+  details.toc-mobile { display: block; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); padding: 10px 14px; }
+  details.toc-mobile summary { font-family: var(--f-display); font-weight: 600; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  details.toc-mobile ol { margin-top: 8px; padding-left: 26px; font-size: 16px; }
+  .modules, .compare { grid-template-columns: minmax(0, 1fr); }
+  section > h2 { font-size: 30px; }
+}
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="kicker">Invoicing &amp; POS for auto repair shops · uso, configuración, funcionamiento</div>
+    <h1>Manual de OpenWerkstatt</h1>
+    <p>Todo lo que necesita saber sobre la instalación y configuración de OpenWerkstatt, el trabajo diario, el envío de correos, las actualizaciones y las copias de seguridad.</p>
+    <div class="meta"><span>Versión <b>2.1.0</b></span><span>Fecha <b>noviembre de 2026</b></span><span>Windows · macOS · Linux · Tableta</span><span><a href="handbuch.html" hreflang="de">Deutsch</a> · <a href="handbook-en.html" hreflang="en">English</a></span></div>
+  </header>
+
+  <nav class="toc" aria-label="Contenido">
+    <div class="label">Contenido</div>
+    <ol id="toc"></ol>
+  </nav>
+
+  <main>
+    <details class="toc-mobile"><summary>Contenido</summary><ol id="toc-m"></ol></details>
+
+    <div class="note"><strong>Sobre esta traducción</strong><span>OpenWerkstatt está pensado para talleres en Alemania: impuestos, factura electrónica, caja (TSE) y DATEV siguen la legislación alemana. Este manual usa los nombres de menú de la interfaz en español. Se mantienen términos alemanes como HU (la ITV alemana), TSE o GoBD cuando se refieren a normas alemanas.</span></div>
+
+    <section id="ueberblick">
+      <h2>¿Qué es OpenWerkstatt?</h2>
+      <p class="lead">OpenWerkstatt es un programa de facturación para talleres de automóviles. Con él se hacen presupuestos, órdenes de trabajo y facturas, se gestionan clientes y vehículos, se llevan la caja y el almacén y se crean facturas electrónicas.</p>
+      <p>OpenWerkstatt es una aplicación web: en el PC del taller funciona un pequeño programa en segundo plano (el servidor de OpenWerkstatt). OpenWerkstatt se usa en el navegador, en el mismo PC o en tabletas y otros puestos de la red. Las pantallas y el manejo se basan en <strong>KFZ-Faktura</strong>, cuyos datos OpenWerkstatt importa por completo.</p>
+      <div class="diagram" role="img" aria-label="Esquema: el PC del taller ejecuta el servidor de OpenWerkstatt y guarda los datos en el perfil de usuario. El navegador del mismo PC, las tabletas y otros puestos acceden a través de la red.">
+        <svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker></defs>
+          <rect class="box main" x="250" y="20" width="260" height="110" rx="8"/>
+          <text x="380" y="50" text-anchor="middle" font-weight="700" font-size="16">PC del taller</text>
+          <text x="380" y="74" text-anchor="middle" font-size="14">Servidor de OpenWerkstatt (ventana de consola)</text>
+          <text x="380" y="96" text-anchor="middle" class="sub">Dirección: http://127.0.0.1:3700</text>
+          <text x="380" y="116" text-anchor="middle" class="sub">Datos: %APPDATA%\OpenWerkstatt</text>
+          <rect class="box" x="20" y="45" width="170" height="60" rx="8"/>
+          <text x="105" y="72" text-anchor="middle" font-weight="600" font-size="14">Navegador en el PC</text>
+          <text x="105" y="92" text-anchor="middle" class="sub">siempre posible</text>
+          <rect class="box" x="570" y="20" width="170" height="60" rx="8"/>
+          <text x="655" y="47" text-anchor="middle" font-weight="600" font-size="14">Tableta</text>
+          <text x="655" y="67" text-anchor="middle" class="sub">solo en modo red</text>
+          <rect class="box" x="570" y="100" width="170" height="60" rx="8"/>
+          <text x="655" y="127" text-anchor="middle" font-weight="600" font-size="14">2.º puesto</text>
+          <text x="655" y="147" text-anchor="middle" class="sub">solo en modo red</text>
+          <path class="wire" d="M190 75 H248" marker-end="url(#ah)" marker-start="url(#ah)"/>
+          <path class="wire dash" d="M512 60 H568" marker-end="url(#ah)"/>
+          <path class="wire dash" d="M512 110 C540 110 540 130 568 130" marker-end="url(#ah)"/>
+          <rect class="box" x="250" y="150" width="260" height="44" rx="8"/>
+          <text x="380" y="177" text-anchor="middle" font-size="14">Thunderbird / programa de correo (opcional)</text>
+          <path class="wire dash" d="M380 130 V148" marker-end="url(#ah)"/>
+        </svg>
+      </div>
+      <div class="note"><strong>Conviene saber</strong><span>La ventana de consola es el servidor de OpenWerkstatt. Debe permanecer abierta mientras se use OpenWerkstatt. Si se cierra, OpenWerkstatt se detiene.</span></div>
+    </section>
+
+    <section id="installation">
+      <h2>Instalación</h2>
+      <p>Tras la instalación, la base de datos está vacía. Cómo introducir los datos de la empresa e importar datos existentes se explica en <a href="#einrichtung">Primera configuración</a> e <a href="#datenuebernahme">Importar datos</a>.</p>
+
+      <h3>Windows 10 / 11 (64 bits)</h3>
+      <ol class="steps">
+        <li><div><strong>Ejecute <code>OpenWerkstatt-Setup-2.1.0.exe</code>.</strong><span>Node.js va incluido en el instalador; no hace falta instalar nada más.</span></div></li>
+        <li><div><strong>Elija el tipo de instalación.</strong><span><em>Para todos los usuarios</em> (predeterminado, requiere derechos de administrador) instala en <code>C:\Archivos de programa\OpenWerkstatt</code>. <em>Solo para mí</em> no requiere derechos de administrador e instala en el perfil de usuario.</span></div></li>
+        <li><div><strong>Elija las opciones.</strong><span>Acceso directo en el escritorio y, para el modo red, la regla del cortafuegos (solo en la instalación para todos los usuarios).</span></div></li>
+        <li><div><strong>Iniciar:</strong><span>menú Inicio <span class="path">OpenWerkstatt</span>. Se abren la ventana de consola y el navegador con <code>http://127.0.0.1:3700</code>.</span></div></li>
+      </ol>
+      <p>El instalador está en español, inglés o alemán y elige el idioma de Windows. El menú Inicio tiene tres entradas: <strong>OpenWerkstatt</strong> (solo este PC), <strong>OpenWerkstatt (red)</strong> (para tabletas y otros puestos) y <strong>Desinstalar OpenWerkstatt</strong>. Con el instalador en alemán se llaman <em>OpenWerkstatt</em>, <em>OpenWerkstatt im Netzwerk</em> y <em>OpenWerkstatt deinstallieren</em>.</p>
+      <p>Una instalación nueva arranca en el idioma de Windows (español, alemán o, si no, inglés). La ventana de consola usa el mismo idioma. Para cambiar la interfaz, use el menú <span class="path">OpenWerkstatt → Sprache / Language</span> o el selector de idioma de la página de inicio de sesión.</p>
+
+      <h3>Linux</h3>
+      <p>Se necesita Node.js 22.13 o posterior. Compruébelo con <code>node -v</code>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Distribución</th><th>Instalar Node.js</th></tr></thead>
+        <tbody>
+          <tr><td>Debian / Ubuntu / Mint</td><td>Con NodeSource: <code>curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -</code>, después <code>sudo apt install -y nodejs</code></td></tr>
+          <tr><td>Fedora (41 o posterior)</td><td><code>sudo dnf install nodejs</code></td></tr>
+          <tr><td>openSUSE</td><td><code>sudo zypper install nodejs24</code></td></tr>
+          <tr><td>Arch / Manjaro</td><td><code>sudo pacman -S nodejs</code></td></tr>
+          <tr><td>sin root</td><td><a href="https://github.com/nvm-sh/nvm">nvm</a>: <code>nvm install 24</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="codeblock"><pre><code>git clone &lt;URL del repositorio&gt; openwerkstatt     # o descomprimir el archivo
+cd openwerkstatt
+./installer/unix/install.sh</code></pre></div>
+      <p>El script instala sin root para el usuario actual: el programa en <code>~/.local/lib/openwerkstatt</code>, el comando de inicio <code>~/.local/bin/openwerkstatt</code> y una entrada en el menú de aplicaciones. Para otra ubicación: <code>PREFIX=/opt/openwerkstatt ./installer/unix/install.sh</code>.</p>
+      <div class="codeblock"><pre><code>openwerkstatt              # solo este ordenador
+openwerkstatt --netzwerk   # compartir con tabletas / otros puestos</code></pre></div>
+      <p>Se detiene con <kbd>Ctrl</kbd>+<kbd>C</kbd> o cerrando el terminal.</p>
+      <h4>Opcional: como servicio sin pantalla</h4>
+      <div class="codeblock"><pre><code>mkdir -p ~/.config/systemd/user
+cat &gt; ~/.config/systemd/user/openwerkstatt.service &lt;&lt;'EOF'
+[Unit]
+Description=OpenWerkstatt
+
+[Service]
+Environment=HOST=0.0.0.0
+ExecStart=/usr/bin/env node %h/.local/lib/openwerkstatt/server/index.js
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+systemctl --user daemon-reload
+systemctl --user enable --now openwerkstatt
+loginctl enable-linger "$USER"</code></pre></div>
+      <p>Si hay un cortafuegos activo, abra el puerto 3700/TCP, p. ej. <code>sudo ufw allow 3700/tcp</code>.</p>
+
+      <h3>macOS</h3>
+      <ol class="steps">
+        <li><div><strong>Instalar Node.js</strong><span>Paquete de <a href="https://nodejs.org/es">nodejs.org</a> (LTS) o <code>brew install node@24</code>.</span></div></li>
+        <li><div><strong>Instalar OpenWerkstatt</strong><span>En el terminal, como en Linux: <code>./installer/unix/install.sh</code>. La app <em>OpenWerkstatt</em> queda en <code>~/Applications</code>.</span></div></li>
+        <li><div><strong>Iniciar</strong><span>Doble clic en <em>OpenWerkstatt</em> o <code>openwerkstatt</code> en el terminal. La primera vez, macOS puede avisar de una app sin firmar: en el Finder, clic derecho → <em>Abrir</em>.</span></div></li>
+      </ol>
+
+      <h3>Contenedor (Docker / Podman)</h3>
+      <p>Para servidores Linux, NAS, Raspberry Pi o Mac, OpenWerkstatt también funciona en un contenedor. La imagen incluye Node.js y funciona en x86_64 y ARM64. En la carpeta de OpenWerkstatt hay un <code>Dockerfile</code> y un <code>compose.yaml</code>.</p>
+      <div class="codeblock"><pre><code># Podman (con Docker, sustituya podman por docker)
+podman build -t openwerkstatt:2.1.0 .
+podman run -d --name openwerkstatt --restart unless-stopped \
+  -p 3700:3700 -v openwerkstatt-daten:/data openwerkstatt:2.1.0
+
+# o con Compose
+docker compose up -d --build</code></pre></div>
+      <p>Después abra <code>http://&lt;ordenador&gt;:3700</code> en el navegador.</p>
+      <div class="note warn"><strong>Active el inicio de sesión</strong><span>En el contenedor, OpenWerkstatt es accesible desde toda la red. Active el inicio de sesión justo después del primer arranque (<span class="path">Ajustes → Valores predeterminados</span>). Solo para este ordenador: <code>-p 127.0.0.1:3700:3700</code>.</span></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Tema</th><th>En el contenedor</th></tr></thead>
+        <tbody>
+          <tr><td>Datos</td><td>en el volumen <code>openwerkstatt-daten</code> (<code>/data</code> dentro del contenedor). Se conservan al reconstruir el contenedor. Carpeta propia: <code>-v /srv/openwerkstatt:/data</code>; debe pertenecer al UID 1000. Con Podman sin root, añada <code>:Z,U</code>.</td></tr>
+          <tr><td>Copias de seguridad</td><td>monte además una carpeta del NAS, p. ej. <code>-v /mnt/nas/openwerkstatt-sicherungen:/sicherungen</code>, e indique <code>/sicherungen</code> como carpeta de copias en OpenWerkstatt.</td></tr>
+          <tr><td>Zona horaria</td><td>predeterminada <code>Europe/Berlin</code>; se cambia con <code>-e TZ=Europe/Madrid</code>.</td></tr>
+          <tr><td>Correo</td><td>solo envío directo por SMTP. En el contenedor no se puede pasar el correo a Thunderbird.</td></tr>
+          <tr><td>Importar datos</td><td>tomar los datos de KFZ-Faktura: suba la copia <code>*.kfz</code> o <code>DB1.bak</code>. La importación directa desde la carpeta del programa solo existe en Windows.</td></tr>
+          <tr><td>Detener</td><td><code>podman stop openwerkstatt</code> cierra la base de datos correctamente.</td></tr>
+          <tr><td>Actualizar</td><td>construya la imagen con la nueva versión, elimine el contenedor con <code>podman rm -f openwerkstatt</code> y créelo de nuevo con la imagen nueva. Los datos del volumen se conservan.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Inicio automático con Podman mediante un archivo Quadlet y más detalles: véase <code>INSTALL.md</code>, sección «Container».</p>
+
+      <h3>Umbrel</h3>
+      <p>En un Umbrel (umbrelOS) abra la <strong>App Store</strong>, arriba a la derecha <strong>⋯ → Community App Stores</strong>, añada <code>https://github.com/TherapyCenter/umbrel-app-store</code>, abra la tienda <strong>TherapyCenter</strong> e instale <strong>OpenWerkstatt</strong>. OpenWerkstatt funciona entonces en <code>http://umbrel.local:3700</code>, protegido por el inicio de sesión de Umbrel. Los datos se guardan en el Umbrel y se conservan en las actualizaciones; guarde además una copia externa con <span class="path">OpenWerkstatt → Copia de seguridad</span>.</p>
+
+      <h3>Sin instalación</h3>
+      <p>Con Node.js (22.13 o posterior) instalado, directamente desde la carpeta descomprimida: <code>OpenWerkstatt starten.bat</code> (Windows), <code>./openwerkstatt.sh</code> (Linux/macOS) o <code>node server/index.js --open</code>.</p>
+    </section>
+
+    <section id="einrichtung">
+      <h2>Primera configuración</h2>
+      <p>Tras el primer inicio, el resumen muestra botones para la configuración. Los puntos más importantes:</p>
+      <ol class="steps">
+        <li><div><strong>Datos de la empresa</strong><span><span class="path">Datos maestros → Ajustes → Datos de la empresa</span>: nombre, dirección, datos bancarios, número fiscal/NIF-IVA y logo. Estos datos aparecen en todos los documentos y en la factura electrónica.</span></div></li>
+        <li><div><strong>Impuestos, reclamaciones, caja</strong><span>Tipos de IVA, régimen de pequeña empresa, niveles de reclamación con días y gastos, saldo inicial de caja.</span></div></li>
+        <li><div><strong>Series de numeración</strong><span>En cada campo figura el último número asignado. La siguiente factura recibe ese número más 1. Si la numeración debe empezar en un número concreto, p. ej. a principio de año, introduzca el número anterior. Más en <a href="#rechnungsnummern">Números de factura</a>.</span></div></li>
+        <li><div><strong>Correo</strong><span>Elija el modo de envío (directo o mediante Thunderbird), véase <a href="#email">Envío de correos</a>.</span></div></li>
+        <li><div><strong>Usuarios e inicio de sesión</strong><span>Cree usuarios en <span class="path">Datos maestros → Usuarios / empleados</span>, active «Acceso permitido» y active el inicio de sesión en <span class="path">Ajustes → Valores predeterminados</span>. En modo red es obligatorio.</span></div></li>
+        <li><div><strong>Idioma</strong><span>Idioma de la interfaz y de los documentos en <span class="path">Ajustes → Valores predeterminados</span>, véase <a href="#bedienung">Manejo</a>.</span></div></li>
+      </ol>
+      <h3>Todas las pestañas de los ajustes</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Pestaña</th><th>Contenido</th></tr></thead>
+        <tbody>
+          <tr><td>Datos de la empresa</td><td>dirección, banco, números fiscales, logo, papel con membrete preimpreso</td></tr>
+          <tr><td>Impuestos / reclamaciones / caja</td><td>tipos de IVA, pequeña empresa, 4 niveles de reclamación, saldo inicial de caja</td></tr>
+          <tr><td>Series de numeración</td><td>clientes, vehículos, artículos, mano de obra, proveedores, neumáticos, todos los documentos</td></tr>
+          <tr><td>Contabilidad</td><td>cuentas (por defecto SKR03), cuentas de ingresos, DATEV: número de asesor y de cliente, longitud de las cuentas, inicio del ejercicio, deudor colectivo, claves BU (véase <a href="#datev">Exportación DATEV</a>)</td></tr>
+          <tr><td>Pago con criptomonedas</td><td>BTCPay Server para Bitcoin, Lightning y USDT, validez de los enlaces de pago, cuenta contable (véase <a href="#krypto">Pago con criptomonedas</a>)</td></tr>
+          <tr><td>Valores predeterminados</td><td>registro bruto/neto, recargo por piezas pequeñas, material de pintura, bloqueo GoBD, inicio de sesión, esquema de colores (claro/oscuro) y color, idioma de la interfaz y de los documentos</td></tr>
+          <tr><td>Correo electrónico</td><td>modo de envío, ruta de Thunderbird, servidor SMTP, plantillas, firma, registro de envíos</td></tr>
+          <tr><td>Recordatorios y SMS</td><td>textos de los recordatorios por correo y SMS, pasarela SMS con plantillas y prueba, registro de recordatorios (véase <a href="#erinnerungen">Recordatorios</a>)</td></tr>
+          <tr><td>WhatsApp y Telegram</td><td>acceso a la WhatsApp Cloud API y nombres de las plantillas, bot de Telegram, textos de «vehículo listo» y de los documentos, registro de mensajes (véase <a href="#messenger">WhatsApp y Telegram</a>)</td></tr>
+          <tr><td>Caja</td><td>TSE (fiskaly), terminal de tarjetas (ZVT), teclas rápidas, cliente de venta al contado</td></tr>
+          <tr><td>Control horario</td><td>ajustes del control horario, estado federado para los festivos</td></tr>
+          <tr><td>Compras / comercio</td><td>contrapartida para facturas de proveedor, acreedor, cuentas de ingresos por venta de vehículos (régimen general y § 25a)</td></tr>
+          <tr><td>Campos personalizados</td><td>nombres propios para campos libres, p. ej. vencimientos y datos de vehículos</td></tr>
+          <tr><td>Tablas maestras</td><td>condiciones de pago, unidades, tarifas por hora, tipos de orden, grupos de productos, fabricantes, formas de pago, bloques de texto, textos de reclamación, países, marcas de neumáticos, colores de vehículo</td></tr>
+          <tr><td>Registro</td><td>registro de cambios</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="datenuebernahme">
+      <h2>Importar datos</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Origen</th><th>Dónde en OpenWerkstatt</th></tr></thead>
+        <tbody>
+          <tr><td>KFZ-Faktura</td><td><span class="path">OpenWerkstatt → Importar datos</span></td></tr>
+          <tr><td>Copia de OpenWerkstatt <code>*.openwerkstatt</code>, KFZ-Faktotum <code>*.kft</code>, Schraubwerk <code>*.swb</code></td><td><span class="path">OpenWerkstatt → Restaurar datos</span></td></tr>
+          <tr><td>CSV, DATANORM 4/5</td><td><span class="path">OpenWerkstatt → Importación de datos</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Desde KFZ-Faktura</h3>
+      <ol>
+        <li><strong>Copia <code>*.kfz</code>:</strong> en KFZ-Faktura use «Daten sichern» y suba el archivo en OpenWerkstatt (arrastrar y soltar). Se admiten copias protegidas con contraseña.</li>
+        <li><strong>Copia de la base de datos</strong> <code>DB1.bak</code> o <code>*.fbk</code>: súbala directamente.</li>
+        <li><strong>Carpeta del programa</strong> (solo Windows), p. ej. <code>C:\KFZ-Faktura</code>. Cierre antes KFZ-Faktura. La base de datos original solo se copia, nunca se modifica.</li>
+      </ol>
+      <p>Se importan todas las tablas: clientes, vehículos, artículos, mano de obra, proveedores, almacenaje de neumáticos, todos los documentos, pagos, partidas pendientes, reclamaciones, libro de caja, asientos contables, bloques de texto, ajustes, series de numeración, códigos KBA y el directorio de códigos postales, además de documentos, imágenes y el logo de la empresa.</p>
+      <h3>Nueva importación: qué se conserva y qué se sustituye</h3>
+      <p>Puede importar datos de KFZ-Faktura varias veces, p. ej. durante un período de transición. Antes de importar, OpenWerkstatt muestra un resumen:</p>
+      <div class="compare">
+        <div><span class="tag">se conserva</span><h4>Datos que solo existen en OpenWerkstatt</h4>
+          <ul><li>ajustes: correo, caja, TSE, copias de seguridad, impresión</li><li>tiques y cierres de caja</li><li>control horario, citas, tareas, cartas</li><li>facturas de proveedor, compraventa de vehículos, contratos, anticipos</li><li>documentos subidos en OpenWerkstatt, registro de correo y de cambios</li><li>campos propios de OpenWerkstatt en los datos maestros, p. ej. formato de factura electrónica y Leitweg-ID del cliente, IBAN del proveedor, horas previstas de los empleados</li></ul></div>
+        <div><span class="tag">se sustituye</span><h4>Datos de KFZ-Faktura</h4>
+          <ul><li>clientes, vehículos, artículos, mano de obra, proveedores</li><li>presupuestos, órdenes, albaranes, facturas</li><li>pagos, libro de caja, series de numeración</li></ul>
+          <p>Antes, OpenWerkstatt indica cuántos de estos registros se han creado o modificado en OpenWerkstatt desde la última importación. Se sustituyen por el estado de la copia.</p></div>
+      </div>
+      <p>Con la casilla «Conservar los datos propios de OpenWerkstatt» (predeterminada) ocurre lo descrito arriba. Sin ella, la importación sustituye todo por la copia.</p>
+      <div class="note ok"><strong>Copia de seguridad previa</strong><span>Antes de cada importación, OpenWerkstatt guarda una copia de los datos anteriores en la subcarpeta <code>sicherheitskopien</code> de la carpeta de datos.</span></div>
+      <div class="note warn"><strong>Trabajo en paralelo</strong><span>No trabaje a la vez en KFZ-Faktura y en OpenWerkstatt con las mismas facturas. Las facturas que cree en OpenWerkstatt (también las automáticas de la caja) se sobrescriben con la siguiente importación.</span></div>
+      <div class="note warn"><strong>Copias en 7-Zip</strong><span>Las versiones recientes de KFZ-Faktura comprimen el archivo <code>.kfz</code> en formato 7-Zip. En ese caso descomprímalo con 7-Zip y suba <code>db\DB1.bak</code>.</span></div>
+      <h3>CSV y DATANORM</h3>
+      <p>El asistente de importación importa clientes, vehículos, artículos, mano de obra y proveedores desde archivos CSV. Las columnas se asignan a los campos de OpenWerkstatt y la asignación puede guardarse como plantilla. Los datos de artículos de mayoristas llegan mediante DATANORM 4/5.</p>
+      <h3>Cambio a otro ordenador</h3>
+      <p>En el ordenador antiguo <span class="path">OpenWerkstatt → Copia de seguridad</span>, en el nuevo <span class="path">OpenWerkstatt → Restaurar datos</span>.</p>
+    </section>
+
+    <section id="bedienung">
+      <h2>Manejo</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Elemento</th><th>Para qué</th></tr></thead>
+        <tbody>
+          <tr><td>Barra de menús</td><td>Arriba: OpenWerkstatt, Datos maestros, Oficina, Compras, Ventas, Compraventa de vehículos, Finanzas, Informes. Aquí están también «Nueva factura», la impresión en lote, la copia de seguridad y la importación.</td></tr>
+          <tr><td>Navegación</td><td>A la izquierda: todas las listas agrupadas por áreas.</td></tr>
+          <tr><td>Barra rápida</td><td>Acciones frecuentes con un clic. Con el icono de reguladores a la derecha (o clic derecho en la barra o en el menú de navegación) se muestran u ocultan botones y entradas de la navegación, por puesto de trabajo.</td></tr>
+          <tr><td>Búsqueda</td><td>Arriba en la barra, accesible con <kbd>Ctrl</kbd>+<kbd>F</kbd>. Encuentra clientes, vehículos y documentos.</td></tr>
+          <tr><td>Listas</td><td>Tablas con barra de búsqueda y barra de letras (A–Z); con doble clic se abre el registro.</td></tr>
+          <tr><td>Más funciones / clic derecho</td><td>Menús contextuales con todas las acciones para el registro seleccionado: continuar, copiar, imprimir, enviar por correo, etc.</td></tr>
+          <tr><td>Formularios</td><td>Con pestañas, p. ej. en el cliente: vehículos, documentos, archivos, condiciones.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Atajos de teclado</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Tecla</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>F1</kbd></td><td>abrir este manual (también en <span class="path">Ayuda → Manual</span>)</td></tr>
+          <tr><td><kbd>F2</kbd></td><td>insertar un artículo en el documento</td></tr>
+          <tr><td><kbd>F3</kbd></td><td>insertar mano de obra en el documento</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>guardar</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>imprimir</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>buscar</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>cerrar ventana o diálogo</td></tr>
+          <tr><td><kbd>Intro</kbd></td><td>en diálogos de entrada: confirmar</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Resumen: ocultar importes y cambiar de moneda</h3>
+      <p>Arriba a la derecha del resumen hay dos interruptores. Ambos solo afectan al puesto actual.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Interruptor</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td>Ojo</td><td>oculta con asteriscos todos los importes del resumen, p. ej. cuando los clientes pueden ver la pantalla. Otro clic los vuelve a mostrar.</td></tr>
+          <tr><td>€ · $ · £ · CHF · ₿</td><td>muestra los importes en euros, dólares estadounidenses, libras esterlinas, francos suizos o bitcoin al tipo actual. Otro clic en ₿ cambia a satoshis (1 bitcoin = 100.000.000 sats) y vuelve. El botón recuerda la última unidad elegida. El tipo y la fuente aparecen bajo los recuadros. Si no necesita el cambio, ocúltelo en <i>Personalizar barra y navegación</i> (icono de reguladores a la derecha de la barra rápida); los importes se muestran entonces en la moneda de la empresa.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Solo visualización</strong><span>Facturas, pagos, asientos, DATEV y todas las impresiones siguen siempre en la moneda de la empresa (euros, libras en el Reino Unido, dólares en EE. UU., francos en Suiza). El interruptor solo cambia cómo se muestran las cifras en el resumen.</span></div>
+      <p>Los tipos de cambio proceden del Banco Central Europeo (dólar, libra esterlina y franco suizo, tipo de referencia del último día hábil) y de la plataforma Bitstamp (bitcoin, tipo actual).</p>
+      <div class="note"><strong>Internet</strong><span>Para los tipos de cambio, el ordenador de OpenWerkstatt consulta al BCE y a Bitstamp como máximo cada tres horas. No se envía ningún dato de OpenWerkstatt. OpenWerkstatt guarda los tipos en caché. Sin internet se usan los últimos cargados. Si nunca se han cargado, la visualización sigue en euros.</span></div>
+
+      <h3>Colores</h3>
+      <p>En <span class="path">Ajustes → Valores predeterminados → Apariencia</span> se configuran dos cosas:</p>
+      <ul>
+        <li><strong>Esquema de colores:</strong> claro, oscuro o automático según el sistema operativo.</li>
+        <li><strong>Color:</strong> azul (predeterminado), verde, grafito o burdeos. Cada color existe en claro y oscuro.</li>
+      </ul>
+      <p>Ambos solo se aplican al puesto o navegador actual. Así se distinguen de un vistazo, p. ej., la caja, la tableta del taller o una empresa de prueba.</p>
+
+      <h3>Idioma</h3>
+      <p>La interfaz y los documentos están disponibles en alemán, inglés, español, francés, italiano y neerlandés. Hay dos ajustes:</p>
+      <ul>
+        <li><strong>Idioma de la interfaz:</strong> en el menú <span class="path">OpenWerkstatt → Sprache / Language</span>, en la página de inicio de sesión o en <span class="path">Ajustes → Valores predeterminados</span>. Solo se aplica al puesto actual. En español, los números aparecen como 1.234,50 y las fechas como 31/12/2026.</li>
+        <li><strong>Idioma de los documentos:</strong> en <span class="path">Ajustes → Valores predeterminados</span>. Se aplica a toda la empresa y afecta a los documentos PDF, la impresión, las reclamaciones y las plantillas de correos y recordatorios. Puede elegir alemán, inglés, español, italiano, neerlandés y francés.</li>
+      </ul>
+      <p>Lo que usted introduce se queda tal cual: los textos de artículos, los nombres de clientes y sus propias plantillas no se traducen. Las indicaciones legales como el § 19 UStG aparecen traducidas, pero sigue aplicándose la legislación del sistema fiscal elegido; los textos legales de los demás países (Francia, Italia, Países Bajos, Bélgica) se imprimen en el idioma del país. La factura electrónica (XRechnung) sigue en alemán.</p>
+    </section>
+
+    <section id="module">
+      <h2>Áreas y funciones</h2>
+      <div class="modules">
+        <div class="module"><h3>Datos maestros</h3><div class="where">Clientes · Vehículos · Artículos · Mano de obra · Proveedores · Neumáticos</div>
+          <ul><li>Clientes con vehículos, historial de documentos, archivos, condiciones, ajustes de factura electrónica y Leitweg-ID</li><li>Clientes extranjeros con factura neta</li><li>Vehículos con búsqueda KBA por HSN/TSN, vencimientos, titular, fotos</li><li>Artículos con grupos de precios y almacén, mano de obra con tarifas por hora</li><li>Almacenaje de neumáticos con resguardo</li></ul></div>
+        <div class="module"><h3>Ventas</h3><div class="where">Presupuestos · Órdenes · Albaranes · Facturas · Rectificativas</div>
+          <ul><li>Líneas con artículos, mano de obra, textos, subtotales, recargos por piezas pequeñas y material de pintura, descuento, suplidos</li><li>Continuar (presupuesto → orden → factura), copiar, archivar</li><li>Facturas de anticipo, parciales y finales, factura agrupada</li><li>Factura rectificativa, abono, anulación</li><li>Impresión en lote, PDF, envío por correo</li><li>Cestas de catálogos de recambios (CSV/DATANORM)</li></ul></div>
+        <div class="module"><h3>Caja</h3><div class="where">Ventas → Caja</div>
+          <ul><li>Entrada por escáner y teclas rápidas, efectivo con cambio, tarjeta de débito, tarjeta de crédito, criptomonedas</li><li>Cobrar órdenes y facturas en la caja</li><li>Ingresos/retiradas, anulación de tiques, informe Z con acta de arqueo</li><li>TSE en la nube fiskaly SIGN DE con código QR, exportación DSFinV-K, terminal de tarjetas por ZVT</li></ul></div>
+        <div class="module"><h3>Compras</h3><div class="where">Factura de proveedor · Existencias · Movimiento de stock · Inventario</div>
+          <ul><li>Facturas de proveedor con entrada en almacén, actualización del precio de compra, pago y asiento contable</li><li>Leer facturas electrónicas recibidas (XRechnung, ZUGFeRD); el proveedor se crea automáticamente</li><li>Existencias con stock mínimo, registro rápido con escáner</li><li>Inventario con lista de recuento y registro</li></ul></div>
+        <div class="module"><h3>Oficina</h3><div class="where">Agenda · Tareas · Cartas · Control horario · Fichaje</div>
+          <ul><li>Agenda, tareas, cartas</li><li>Control horario con cuenta de horas, ausencias, cierre mensual, hoja de horas, festivos por estado federado</li><li>Fichaje: entrada/salida, pausa, orden, lista de presentes</li></ul></div>
+        <div class="module"><h3>Compraventa de vehículos</h3><div class="where">Stock de vehículos · Contratos de compraventa · Estadística de ventas</div>
+          <ul><li>Vehículos nuevos y usados con equipamiento y datos Pkw-EnVKV</li><li>Cálculo, régimen del margen según § 25a UStG, etiqueta de precio</li><li>Vehículos entregados a cuenta, contratos de compraventa con creación de factura</li></ul></div>
+        <div class="module"><h3>Finanzas</h3><div class="where">Libro de caja · Pagos · Partidas pendientes · Lista de facturas · Reclamaciones · Contabilidad</div>
+          <ul><li>Pagos y partidas pendientes</li><li>Reclamaciones de pago en 4 niveles, en PDF o por correo</li><li>Libro de caja, exportación DATEV, exportación GoBD</li></ul></div>
+        <div class="module"><h3>Informes</h3><div class="where">Vencimientos de vehículos · Ventas · Cartas en serie · Grado de rendimiento</div>
+          <ul><li>Vencimientos de HU (ITV) y mantenimiento con cartas de recordatorio</li><li>Ventas y beneficio bruto</li><li>Cartas en serie, rendimiento por orden y por empleado</li></ul></div>
+      </div>
+      <h3>Sistema</h3>
+      <ul>
+        <li><strong>Empresas:</strong> llevar por separado varios negocios o datos de prueba, <span class="path">OpenWerkstatt → Cambiar de empresa</span>.</li>
+        <li><strong>Usuarios y permisos:</strong> definir por usuario qué áreas puede ver, crear, editar o eliminar y si ve los precios de compra.</li>
+        <li><strong>Registros:</strong> registro de cambios y registro de envíos de correo.</li>
+      </ul>
+    </section>
+
+    <section id="erechnung">
+      <h2>Factura electrónica</h2>
+      <p>OpenWerkstatt crea facturas electrónicas según la norma EN 16931 y lee las facturas electrónicas recibidas.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Formato</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td>XRechnung 3.0 (CII)</td><td>archivo XML puro, p. ej. para administraciones públicas</td></tr>
+          <tr><td>XRechnung 3.0 (UBL)</td><td>archivo XML puro en sintaxis UBL</td></tr>
+          <tr><td>ZUGFeRD 2.3 / Factur-X</td><td>PDF/A-3 con XRechnung incrustada, legible por personas y programas</td></tr>
+          <tr><td>Factur-X EN 16931</td><td>Francia: PDF con CII incrustado, también para Chorus Pro</td></tr>
+          <tr><td>FatturaPA 1.2.2</td><td>Italia: XML para el SdI (particulares, empresas, administraciones)</td></tr>
+          <tr><td>ebInterface 6.1</td><td>Austria: XML para e-rechnung.gv.at</td></tr>
+          <tr><td>Peppol BIS Billing 3.0</td><td>Países Bajos, Bélgica y Luxemburgo: UBL por la red Peppol</td></tr>
+          <tr><td>Factura QR</td><td>Suiza: sección de pago con Swiss QR Code en la factura</td></tr>
+        </tbody>
+      </table></div>
+      <p>El formato que recibe cada cliente se indica en sus ajustes de factura electrónica y se propone automáticamente al enviar por correo. Casos fiscales admitidos: inversión del sujeto pasivo, entrega intracomunitaria, exportación, pequeña empresa, régimen del margen. Comprobado con el validador Mustang, con las reglas EN 16931 y las reglas XRechnung de KoSIT (3.0.2); FatturaPA, ebInterface, Peppol y la declaración de IVA belga con los esquemas y reglas oficiales.</p>
+      <p>Las facturas electrónicas recibidas se leen en <span class="path">Compras → Factura de proveedor</span>. Para ver una XRechnung use <span class="path">Compras → Visualizar factura electrónica</span>.</p>
+    </section>
+
+    <section id="spanien">
+      <h2>España: IVA y VERI*FACTU</h2>
+      <p>OpenWerkstatt puede trabajar con la normativa fiscal española por empresa. Se activa en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span> (los ajustes están en la pestaña <span class="path">España / VERI*FACTU</span>); después guarde y vuelva a cargar el programa. Para documentos en español, ponga el idioma de los documentos en Español en <span class="path">Ajustes → Valores predeterminados → Idioma</span>. Las demás empresas, las facturas existentes, las copias de seguridad y la importación desde KFZ-Faktura no cambian.</p>
+      <h3>Qué cambia</h3>
+      <ul>
+        <li><strong>IVA:</strong> 21 %, 10 % y 4 % (configurables), líneas exentas y suplidos (importes pagados por cuenta del cliente, p. ej. la tasa de la ITV; regístrelos como partida de paso).</li>
+        <li><strong>Recargo de equivalencia:</strong> se activa en el cliente, en <span class="path">Impuestos y contabilidad</span>. El recargo (5,2 / 1,4 / 0,5 %) se añade automáticamente a la factura.</li>
+        <li><strong>NIF:</strong> en el cliente, campo <em>NIF / NIF-IVA</em>. El NIF propio va en <span class="path">Datos de la empresa → Número fiscal</span>.</li>
+        <li><strong>Numeración:</strong> serie + número correlativo, p. ej. F20260001; las rectificativas usan la serie R.</li>
+        <li><strong>Tipos de factura:</strong> los clientes con NIF reciben factura completa (F1), los demás factura simplificada (F2) hasta 400 €. Por encima, OpenWerkstatt pide el NIF.</li>
+        <li><strong>Caja:</strong> cada venta es una factura; el ticket muestra serie, número, NIF y el código QR. VERI*FACTU sustituye a la TSE alemana.</li>
+        <li><strong>Contabilidad:</strong> en <span class="path">Finanzas → Exportación contable</span> están los libros de <em>facturas expedidas</em> y <em>recibidas</em> en CSV y un resumen para el <em>modelo 303</em>.</li>
+        <li><strong>Factura electrónica para administraciones:</strong> Facturae 3.2.2. Introduzca los códigos DIR3 de la administración en el campo Leitweg-ID del cliente como <code>Oficina/Órgano/Unidad</code>. Firme el archivo con AutoFirma antes de subirlo a FACe.</li>
+      </ul>
+      <h3>VERI*FACTU</h3>
+      <p>Una factura queda <strong>expedida</strong> en cuanto sale de OpenWerkstatt: impresión, PDF, correo o caja. OpenWerkstatt lo pregunta antes. Se genera un registro con huella encadenada y su código QR se imprime en la parte superior de la factura. OpenWerkstatt envía el registro a la AEAT o, sin internet, más tarde automáticamente. A partir de ahí la factura queda bloqueada; solo se corrige con una factura rectificativa (anular factura). El estado aparece en la ventana de la factura, junto a los botones.</p>
+      <ol>
+        <li>Guarde el certificado electrónico de la empresa (.p12 / .pfx) en <span class="path">Ajustes → España / VERI*FACTU</span> y <em>pruebe la conexión</em>.</li>
+        <li>Expida algunas facturas en el entorno de <em>Pruebas</em> y compruebe que se aceptan. Mejor en una empresa de prueba aparte, porque las facturas de prueba también quedan bloqueadas.</li>
+        <li>Cambie a <em>Producción</em>. A partir de ahora las facturas se registran en la AEAT.</li>
+      </ol>
+      <p>El certificado, la cadena de huellas y una copia de todos los registros están en la carpeta de datos, en <code>verifactu</code>. Esta carpeta no forma parte de la copia de seguridad de OpenWerkstatt y se conserva al restaurar una copia, de modo que no se pierde ningún registro ni se repite ningún número ya remitido. Haga también copia de esa carpeta.</p>
+      <p>No soportado: TicketBAI (País Vasco), Navarra, IGIC (Canarias), régimen especial de bienes usados (REBU) en VERI*FACTU, la modalidad «No VERI*FACTU» y el SII.</p>
+    </section>
+
+    <section id="uk">
+      <h2>Reino Unido: VAT y Making Tax Digital</h2>
+      <p>Elija «Reino Unido» en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y vuelva a cargar. La empresa factura entonces en libras (£). Su número de IVA británico va en <span class="path">Datos de la empresa → NIF-IVA</span> (p. ej. GB123456782); ponga el idioma de los documentos en inglés.</p>
+      <ul>
+        <li><strong>Facturas:</strong> se titulan «VAT invoice» y muestran la fecha de devengo (tax point), el tipo de IVA de cada línea y el VAT Reg. No. Las rectificativas se titulan «Credit note».</li>
+        <li><strong>Tipos:</strong> estándar (20 %), reducido (5 %), tipo cero y exento. Los gastos por cuenta del cliente, como la tasa MOT, se registran como partida de paso (no sujetos). Los coches usados con régimen del margen usan el second-hand margin scheme.</li>
+        <li><strong>Sin registro de IVA:</strong> por debajo del umbral marque «No registrado a efectos de IVA»; las facturas van sin IVA.</li>
+        <li><strong>Régimen:</strong> estándar, criterio de caja o flat rate scheme (porcentaje configurable; reparación de vehículos 8,5 %).</li>
+      </ul>
+      <h3>VAT return con Making Tax Digital</h3>
+      <ol>
+        <li>Una vez: guarde las credenciales del HMRC Developer Hub (<span class="path">Ajustes → Reino Unido / MTD</span>), después <em>Conectar con HMRC</em> e inicie sesión con el Government Gateway de la empresa. La conexión dura 18 meses.</li>
+        <li><span class="path">Finanzas → Exportación contable</span>: <em>Cargar periodos de HMRC</em> y, en el periodo abierto, <em>Calcular y presentar</em>.</li>
+        <li>Revise las 9 casillas, confirme la declaración y envíela. HMRC responde con un justificante (form bundle number).</li>
+      </ol>
+      <p>Las casillas 1 y 6 salen de las facturas; la 4 y la 7, de las facturas recibidas. Para pruebas existe el sandbox de HMRC. Los datos de acceso están en la carpeta de datos, en <code>gb</code>, no en la copia de seguridad.</p>
+      <p>En la misma página hay exportaciones CSV para Xero (ventas y compras), QuickBooks Online, Sage 50 y un diario de IVA.</p>
+    </section>
+
+    <section id="usa">
+      <h2>Estados Unidos: sales tax</h2>
+      <p>Elija «Estados Unidos» en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y vuelva a cargar. La empresa factura entonces en dólares y la fecha va con el mes primero (MM/DD/AAAA). Escriba la ciudad como «Springfield, IL» y el ZIP code en el campo del código postal.</p>
+      <ul>
+        <li><strong>Sales tax:</strong> introduzca el tipo combinado de su ubicación (estado + condado + ciudad) en <span class="path">Ajustes → Estados Unidos / Sales tax</span>. Si la mano de obra, los suministros de taller y las tasas están sujetos depende del estado y se puede configurar. Las líneas sujetas llevan una «T» en la factura.</li>
+        <li><strong>Clientes exentos</strong> (reventa, gobierno, sin ánimo de lucro): en el cliente, en <span class="path">Impuestos y contabilidad</span>, con el número del certificado de exención.</li>
+        <li><strong>Requisitos de la factura:</strong> número de registro del taller en el pie, estado de las piezas (nueva, usada, reconstruida) en la línea, odómetro a la entrada y a la salida, destino de las piezas sustituidas (pestaña <em>Otros</em>).</li>
+        <li><strong>Suministros de taller y tasas:</strong> botones en la barra de líneas. Los suministros son un porcentaje de la mano de obra con un máximo; las tasas (residuos, neumáticos por unidad, core charge) son una lista en los ajustes.</li>
+        <li><strong>Autorización del presupuesto:</strong> registre cada autorización del cliente con importe, fecha, forma y persona en la pestaña <em>Otros</em>. Se imprime en la orden y la factura; si la factura la supera, OpenWerkstatt pregunta antes de imprimir. El presupuesto lleva el aviso y una línea de firma.</li>
+        <li><strong>Caja:</strong> precios sin impuesto; el sales tax se suma al total.</li>
+        <li><strong>Contabilidad:</strong> <span class="path">Finanzas → Exportación contable</span> genera un CSV para importar facturas en QuickBooks Online (código TAX/NON).</li>
+      </ul>
+      <p>OpenWerkstatt no determina los tipos automáticamente ni presenta declaraciones; de eso se encarga su asesor o QuickBooks.</p>
+    </section>
+
+    <section id="frankreich">
+      <h2>Francia: TVA, Factur-X y caja (NF525)</h2>
+      <p>Elija “France” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">France</span>. Para documentos en francés elija el idioma de documentos “Français”.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> SIRET (14 cifras) en Número fiscal, número de IVA (FR…) en NIF-IVA. Forma jurídica, capital, RCS y código APE en la pestaña France; aparecen en el pie.</li>
+        <li><strong>Tipos:</strong> 20 %, 10 % y 5,5 % (código “AT-MwSt”), 0 % exento. Se puede activar la franchise en base (art. 293 B CGI).</li>
+        <li><strong>Menciones obligatorias:</strong> naturaleza de las operaciones, descuento, penalizaciones por demora y la indemnización de 40 € para clientes empresariales se imprimen automáticamente; el SIREN/SIRET de los clientes empresariales va en el cliente. Las facturas impresas quedan bloqueadas; las correcciones son abonos (avoir).</li>
+        <li><strong>Factur-X:</strong> en la ventana de la factura <em>Factur-X / Chorus Pro → descargar PDF Factur-X</em> (perfil EN 16931). Las facturas a administraciones van directamente a Chorus Pro (credenciales PISTE en la pestaña France).</li>
+        <li><strong>Caja:</strong> cada ticket se firma y se encadena con el anterior, con gran total, cierres diarios, mensuales y anuales, duplicados numerados y registro de eventos. El diario se guarda también fuera de la copia de seguridad y sigue completo al restaurar una copia antigua. La certificación NF525 la realiza un organismo acreditado.</li>
+        <li><strong>Contabilidad:</strong> <span class="path">Finanzas → Exportación contable</span> genera el FEC y el archivo firmado de caja y muestra los envíos a Chorus Pro.</li>
+      </ul>
+    </section>
+
+    <section id="oesterreich">
+      <h2>Austria: IVA, caja registradora (RKSV) y UVA</h2>
+      <p>Elija “Österreich” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">Österreich</span>.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> el número UID (ATU…) en NIF-IVA, el número fiscal (oficina + número, 9 cifras) en Número fiscal. Forma jurídica, sede, número y tribunal del registro mercantil en la pestaña Österreich (§ 14 UGB).</li>
+        <li><strong>Tipos:</strong> 20 %, 10 % y 13 % (tercer tipo, código “AT-MwSt”), exento 0 %. Se puede activar el régimen de pequeña empresa y el criterio de caja.</li>
+        <li><strong>Facturas:</strong> UID de la empresa, fecha de la prestación y, a partir de 10.000 € brutos, el UID del cliente. <em>Factura electrónica → Comprobar datos obligatorios</em> indica lo que falta.</li>
+        <li><strong>Facturas electrónicas a la Administración federal:</strong> <em>Factura electrónica (ebInterface) → descargar ebInterface 6.1</em> y subirla en e-rechnung.gv.at. El número de proveedor va en el campo Leitweg-ID del cliente y la referencia del pedido en el número de pedido de la factura.</li>
+      </ul>
+      <h3>Caja registradora (RKSV)</h3>
+      <ol>
+        <li>En la pestaña Österreich introduzca el identificador de la caja y elija el dispositivo de firma: A-Trust a.sign RK (usuario y contraseña de A-Trust) o el modo de prueba con clave local. El modo de prueba no cumple la RKSV.</li>
+        <li><em>Activar caja registradora</em>: OpenWerkstatt crea la clave AES y el recibo inicial. Registre el identificador y la clave AES en FinanzOnline y compruebe el recibo inicial con la app BMF-Belegcheck.</li>
+        <li>Cada venta y anulación en la caja recibe un recibo firmado con código QR. Al cambiar de mes OpenWerkstatt crea el recibo mensual y en diciembre el anual; compruebe y conserve el recibo anual.</li>
+        <li>Si falla el dispositivo de firma, los recibos indican “Sicherheitseinrichtung ausgefallen” y después se crea un recibo colectivo. Comunique en FinanzOnline los fallos de más de 48 horas.</li>
+      </ol>
+      <p><span class="path">Finanzas → Exportación contable</span> (vista “Steuer (Österreich)”) muestra los recibos RKSV, comprueba encadenamiento, contador de ventas y firmas y exporta el protocolo de datos (DEP).</p>
+      <h3>Declaración de IVA (UVA)</h3>
+      <p>La misma vista calcula la UVA (Kennzahlen 000, 011, 017, 016, 020, 022, 029, 006, 060) y genera el XML para FinanzOnline (U30). Las prestaciones a empresarios de la UE y las entregas intracomunitarias se declaran además en la declaración recapitulativa.</p>
+    </section>
+
+    <section id="schweiz">
+      <h2>Suiza: IVA, factura QR y CHF</h2>
+      <p>Elija “Schweiz” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La empresa trabaja entonces en francos (CHF 1'234.50). La configuración está en la pestaña <span class="path">Schweiz</span>.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> UID / número de IVA (CHE-123.456.789) en NIF-IVA y el registro mercantil en Registro mercantil. Los documentos muestran “MWST-Nr. CHE-… MWST”.</li>
+        <li><strong>Tipos:</strong> 8,1 % normal, 2,6 % reducido, 3,8 % alojamiento (código “AT-MwSt”), 0 % excluido. Las empresas con menos de CHF 100 000 de volumen eligen “no sujeta a IVA”.</li>
+        <li><strong>Factura QR:</strong> cada factura lleva abajo la sección de pago con el resguardo por el importe pendiente; en facturas largas, en la última página o en una propia. Con un QR-IBAN se usa una referencia QR de 27 cifras, si no una Creditor Reference (RF…) con el número de factura.</li>
+        <li><strong>Caja:</strong> los pagos en efectivo se redondean a 5 céntimos; la diferencia aparece como línea “Rundungsdifferenz”.</li>
+        <li><strong>Declaración de IVA:</strong> <span class="path">Finanzas → Exportación contable</span> muestra las cifras del formulario de la AFC (200 a 510) por el método efectivo o el de tipo impositivo de saldo. Introdúzcalas en el ePortal de la AFC; el CSV sirve de archivo.</li>
+      </ul>
+    </section>
+
+    <section id="italien">
+      <h2>Italia: IVA y factura electrónica</h2>
+      <p>Elija “Italia” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">Italia</span>. Para documentos en italiano elija el idioma de documentos “Italiano”.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> partita IVA (11 cifras) en NIF-IVA, codice fiscale en Número fiscal (vacío = igual que la partita IVA). Provincia, REA, capital social, socio único y liquidación en la pestaña Italia.</li>
+        <li><strong>Clientes:</strong> partita IVA en NIF-IVA; codice fiscale, código de destinatario SdI (7 caracteres, administraciones 6) o PEC y split payment en <span class="path">Impuestos y contabilidad</span>. Indique la población con la provincia, p. ej. “Torino (TO)”.</li>
+        <li><strong>Tipos:</strong> 22 %, 10 % y 4 % (código “AT-MwSt”, ajustable p. ej. a 5 %), 0 % exento. Se puede activar el regime forfettario. Las líneas sin IVA reciben automáticamente el código Natura (N1 suplidos, N2 no sujetas, N3 exportación/intracomunitarias, N4 exentas, N5 régimen del margen).</li>
+        <li><strong>Factura electrónica:</strong> en la ventana de la factura <em>Fattura elettronica (FatturaPA) → descargar XML</em> y envíe el archivo por el portal “Fatture e Corrispettivi”, por PEC al SdI o mediante su intermediario. OpenWerkstatt elige FPR12 o FPA12 para administraciones, notas de crédito TD04, imposta di bollo y split payment. La impresión es una copia de cortesía; las facturas impresas quedan bloqueadas.</li>
+        <li><strong>Caja:</strong> cada venta se registra como factura; el ticket indica “Documento non fiscale”. Para documentos comerciales hace falta un dispositivo RT homologado.</li>
+        <li><strong>Liquidación del IVA:</strong> <span class="path">Finanzas → Exportación contable</span> muestra IVA repercutido, IVA soportado, split payment, saldo y el código de tributo del F24 (mensual o trimestral con 1 % de intereses) y exporta el registro de IVA de ventas en CSV. La LIPE y la declaración anual las presenta su asesor.</li>
+      </ul>
+    </section>
+
+    <section id="niederlande">
+      <h2>Países Bajos: btw y Peppol</h2>
+      <p>Elija “Nederland” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">Nederland</span>. Para documentos en neerlandés elija el idioma de documentos “Nederlands”.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> btw-id (NL123456782B01) en NIF-IVA y número KvK en la pestaña Nederland. Ambos aparecen en el pie de cada documento.</li>
+        <li><strong>Tipos:</strong> 21 %, 9 % y 0 % exento. Se puede activar el régimen de pequeños empresarios (KOR). Inversión del sujeto pasivo, entregas intracomunitarias, exportaciones, régimen del margen y suplidos llevan el texto obligatorio.</li>
+        <li><strong>Factura electrónica (Peppol):</strong> registre las administraciones con su OIN (20 cifras) y las empresas con su número KvK; la referencia del comprador va en el campo Leitweg-ID o en el número de pedido de la factura. En la ventana de la factura <em>E-factuur (Peppol) → descargar</em> y envíela mediante su proveedor Peppol o el Leveranciersportaal.</li>
+        <li><strong>Declaración de IVA:</strong> <span class="path">Finanzas → Exportación contable</span> muestra las rúbricas 1a–5g (volumen en euros enteros redondeado a la baja, impuesto redondeado a su favor) y las exporta en CSV. Introduzca los importes en Mijn Belastingdienst Zakelijk; las prestaciones a empresarios de la UE van además en la declaración ICP.</li>
+        <li><strong>Caja:</strong> en los Países Bajos no hay obligación de caja fiscal; el ticket muestra el btw-id.</li>
+      </ul>
+    </section>
+
+    <section id="belgien">
+      <h2>Bélgica: IVA, Peppol e Intervat</h2>
+      <p>Elija “België / Belgique” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">België / Belgique</span>. Elija el idioma de documentos “Nederlands” o “Français”; los textos legales lo siguen.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> número de empresa (BE0123456749) en NIF-IVA y RPR/RPM en la pestaña België / Belgique. Ambos aparecen en el pie.</li>
+        <li><strong>Tipos:</strong> 21 %, 6 % y 12 % (código “AT-MwSt”), 0 % exento. Se puede activar la franquicia de pequeñas empresas.</li>
+        <li><strong>Factura electrónica (Peppol):</strong> obligatoria entre empresas belgas desde 2026. Indique el número de empresa o NIF-IVA del cliente; es su dirección Peppol. En la ventana de la factura <em>E-Rechnung (Peppol) → descargar</em> y envíela mediante su proveedor Peppol o Hermes.</li>
+        <li><strong>Declaración de IVA:</strong> <span class="path">Finanzas → Exportación contable</span> muestra las casillas (00–03, 44–49, 54, 59, 63, 64, 71/72, 82, 85) y genera el XML para Intervat (mensual o trimestral). Las pequeñas empresas en franquicia no presentan declaración periódica.</li>
+      </ul>
+    </section>
+
+    <section id="luxemburg">
+      <h2>Luxemburgo: IVA, Peppol y eCDF</h2>
+      <p>Elija “Lëtzebuerg / Luxembourg” en <span class="path">Ajustes → Impuestos / reclamaciones / caja → Sistema fiscal</span>, guarde y recargue. La configuración está en la pestaña <span class="path">Lëtzebuerg</span>. Elija el idioma de documentos “Français” o “Deutsch”; los textos legales lo siguen.</p>
+      <ul>
+        <li><strong>Datos de la empresa:</strong> número de IVA (LU15027442) en NIF-IVA, RCS y autorización de establecimiento en la pestaña Lëtzebuerg; aparecen en el pie.</li>
+        <li><strong>Tipos:</strong> 17 %, 8 % (ajustable p. ej. a 3 %) y 14 % (código “AT-MwSt”), 0 % exento. Se puede activar la franquicia de pequeñas empresas (art. 57).</li>
+        <li><strong>Factura electrónica (Peppol):</strong> obligatoria para las administraciones. Indique el NIF-IVA del cliente; es su dirección Peppol. En la ventana de la factura <em>E-Rechnung (Peppol) → descargar</em> y envíela mediante su proveedor Peppol.</li>
+        <li><strong>Declaración de IVA:</strong> <span class="path">Finanzas → Exportación contable</span> muestra las casillas del formulario eCDF (012, 021, 022, 701–706, 046, 458, 105 …) y genera el XML para la plataforma eCDF. Para ello indique el matricule y el prefijo eCDF en la pestaña Lëtzebuerg. Las pequeñas empresas en franquicia solo presentan la declaración anual.</li>
+        <li><strong>Declaración anual:</strong> elija el año en la misma vista; OpenWerkstatt rellena las secciones I–IV (TVA_DECA). Las demás partes del formulario, entre ellas los anexos de gastos, las completa su asesor en eCDF.</li>
+        <li><strong>Declaración recapitulativa:</strong> entregas intracomunitarias (TVA_LICM / LICT) y servicios a empresas de otros países de la UE (TVA_PSIM / PSIT) por cliente, como XML para eCDF. Los clientes necesitan un NIF-IVA válido de su país.</li>
+      </ul>
+    </section>
+
+    <section id="datev">
+      <h2>Exportación DATEV para el asesor fiscal</h2>
+      <p class="lead">OpenWerkstatt contabiliza automáticamente facturas, pagos, facturas de proveedor y ventas de caja y los exporta como archivos DATEV. Su asesor fiscal los importa directamente en DATEV, el programa contable habitual en Alemania.</p>
+      <h3>Configurar una vez</h3>
+      <p>En <span class="path">Ajustes → Contabilidad</span>. Los valores se los da su asesor fiscal.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Ajuste</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td>Número de asesor, número de cliente</td><td>sus números en el despacho DATEV</td></tr>
+          <tr><td>Longitud de las cuentas</td><td>normalmente 4. Determina también las cuentas personales (véase abajo)</td></tr>
+          <tr><td>El ejercicio empieza en el mes</td><td>1 = año natural. Para un ejercicio distinto, el mes de inicio, p. ej. 7 para 01.07.–30.06.</td></tr>
+          <tr><td>Deudor colectivo</td><td>cuenta para clientes sin cuenta de deudor propia (predeterminada 10000)</td></tr>
+          <tr><td>Acreedor colectivo</td><td>en <span class="path">Ajustes → Compras / comercio</span> (predeterminado 70000)</td></tr>
+          <tr><td>Incluir claves BU</td><td>actívelo solo si su asesor usa cuentas de ingresos y gastos <em>sin</em> función automática. Los ingresos reciben entonces la clave de IVA (19 %: 3, 7 %: 2) y las facturas de proveedor la de IVA soportado (19 %: 9, 7 %: 8).</td></tr>
+          <tr><td>Cuentas</td><td>caja, banco y cuentas de ingresos (por defecto SKR03). Con SKR04, acuérdelo con su asesor y ajústelas.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Cuentas personales (deudores y acreedores)</h3>
+      <p>Las cuentas personales tienen un dígito más que las cuentas generales. Con longitud 4:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Clase</th><th>Rango</th><th>De dónde sale el número</th></tr></thead>
+        <tbody>
+          <tr><td>Deudores (clientes)</td><td>10000–69999</td><td>n.º de deudor del cliente, si no el número de cliente, si no el deudor colectivo</td></tr>
+          <tr><td>Acreedores (proveedores)</td><td>70000–99999</td><td>n.º de acreedor del proveedor, si no el número de proveedor, si no el acreedor colectivo</td></tr>
+        </tbody>
+      </table></div>
+      <p>Un número fuera del rango, p. ej. el proveedor n.º 3 de una importación de KFZ-Faktura, no se usa, porque sería una cuenta general. El asiento va entonces a la cuenta colectiva. Si el cliente debe tener cuenta propia, indique el <strong>n.º de deudor</strong> en el cliente o el <strong>n.º de acreedor</strong> en el proveedor.</p>
+      <h3>Proceso mensual</h3>
+      <ol class="steps">
+        <li><div><strong>Elegir el período</strong><span><span class="path">Finanzas → Exportación contable</span>, p. ej. el mes anterior. La lista muestra todos los asientos aún no exportados.</span></div></li>
+        <li><div><strong>Exportar deudores/acreedores</strong><span>El archivo <code>EXTF_Debitoren_Kreditoren_….csv</code> contiene nombre, dirección, país y NIF-IVA de todos los clientes y proveedores con asientos en el período. Así el asesor ve nombres y no solo números de cuenta.</span></div></li>
+        <li><div><strong>Crear la exportación DATEV</strong><span>El archivo <code>EXTF_Buchungsstapel_….csv</code> contiene los asientos. OpenWerkstatt los marca como exportados para que no se repitan la próxima vez. «Exportación de prueba» crea el mismo archivo sin marcarlos.</span></div></li>
+        <li><div><strong>Enviar al asesor fiscal</strong><span>Ambos archivos. El asesor importa primero los deudores/acreedores y después el lote de asientos.</span></div></li>
+      </ol>
+      <div class="note warn"><strong>Tenga en cuenta</strong>
+        <span>Una exportación solo puede abarcar un ejercicio. Exporte diciembre y enero por separado. OpenWerkstatt lo advierte.</span>
+        <span>Las facturas en PDF no se incluyen. El asesor sigue recibiendo los justificantes por separado.</span>
+        <span>La primera vez, pida a su asesor que importe ambos archivos de prueba (lote de asientos y deudores/acreedores) y revise las cuentas.</span>
+        <span>Los asientos ya guardados conservan sus cuentas. Si antes se contabilizó para un cliente o proveedor con número corto (menor de 10000 o 70000), el asiento puede estar en una cuenta general. La exportación no lo detecta, porque p. ej. «3» es una cuenta general válida. Indique un n.º de deudor o acreedor para esos clientes y proveedores y pida al asesor que revise los asientos antiguos.</span></div>
+      <p>Los archivos se guardan con el juego de caracteres Windows-1252, como espera DATEV. Así las diéresis y acentos llegan correctamente.</p>
+    </section>
+
+    <section id="email">
+      <h2>Envío de correos</h2>
+      <p>Las facturas, presupuestos y reclamaciones se envían con <strong>Más funciones / clic derecho → Enviar por correo</strong>. Destinatario, asunto y texto vienen rellenados, y el documento se adjunta como PDF, ZUGFeRD o XRechnung. Puede añadir más archivos.</p>
+      <p>En <span class="path">Ajustes → Correo electrónico → Modo de envío</span> se elige cómo envía OpenWerkstatt el correo:</p>
+      <div class="compare">
+        <div><span class="tag">Modo de envío 1</span><h4>Directamente desde OpenWerkstatt (SMTP)</h4>
+          <p>OpenWerkstatt envía el correo por sí mismo mediante el servidor de correo saliente de su proveedor.</p>
+          <ul><li>funciona desde cualquier dispositivo, también desde la tableta</li><li>hay que indicar servidor SMTP, puerto, cifrado, usuario y contraseña</li><li>el correo <strong>no</strong> aparece en Thunderbird en «Enviados»; para ello use el registro de envíos o una copia CCO a usted mismo</li></ul></div>
+        <div><span class="tag">Modo de envío 2</span><h4>Pasar al programa de correo</h4>
+          <p>OpenWerkstatt abre en Thunderbird un correo listo con el adjunto. Usted lo revisa y pulsa Enviar allí.</p>
+          <ul><li>después el correo está en la carpeta «Enviados» de Thunderbird</li><li>no hacen falta datos SMTP en OpenWerkstatt</li><li>sin Thunderbird, el programa de correo predeterminado (p. ej. Outlook) recibe un borrador</li><li>solo es posible en el PC donde se ejecuta OpenWerkstatt</li></ul></div>
+      </div>
+      <h3>Configurar Thunderbird</h3>
+      <ol class="steps">
+        <li><div><strong>Cambiar el modo de envío</strong><span><span class="path">Ajustes → Correo electrónico → Modo de envío</span> a «Pasar al programa de correo (p. ej. Thunderbird)».</span></div></li>
+        <li><div><strong>Comprobar si se encontró</strong><span>Debajo, OpenWerkstatt indica si ha encontrado Thunderbird. En una instalación portátil o poco habitual, indique usted la ruta de <code>thunderbird.exe</code>.</span></div></li>
+        <li><div><strong>Probar</strong><span>«Guardar ajustes y probar el programa de correo» abre un correo de prueba en Thunderbird.</span></div></li>
+      </ol>
+      <div class="note warn"><strong>Tenga en cuenta</strong>
+        <span>En OpenWerkstatt la factura cuenta como «enviada por correo» en cuanto se entrega, aunque no envíe el correo en Thunderbird.</span>
+        <span>OpenWerkstatt añade su firma. Si Thunderbird también tiene una, aparecen las dos. Vacíe una de ellas.</span>
+        <span>Los adjuntos entregados se guardan en <code>%APPDATA%\OpenWerkstatt\mail-ausgang</code> y se borran a los 14 días.</span></div>
+      <h3>Plantillas y marcadores</h3>
+      <p>El asunto y el texto para documentos y reclamaciones, así como la firma, se configuran en <span class="path">Ajustes → Correo electrónico</span>. Los textos predeterminados siguen el idioma de los documentos. Se sustituyen estos marcadores:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Marcador</th><th>se convierte en</th></tr></thead>
+        <tbody>
+          <tr><td><code>{Vorgang}</code></td><td>tipo de documento, p. ej. factura</td></tr>
+          <tr><td><code>{Nummer}</code></td><td>número del documento</td></tr>
+          <tr><td><code>{Name}</code></td><td>nombre del cliente</td></tr>
+          <tr><td><code>{Anrede}</code></td><td>tratamiento de los datos del cliente</td></tr>
+          <tr><td><code>{Briefanrede}</code></td><td>«Estimado Sr. …:» / «Estimada Sra. …:» / «Estimados señores:» (en el idioma de los documentos)</td></tr>
+          <tr><td><code>{Firma}</code></td><td>el nombre de su empresa</td></tr>
+          <tr><td><code>{Betrag}</code></td><td>importe bruto; en las reclamaciones, el importe pendiente</td></tr>
+          <tr><td><code>{Datum}</code></td><td>fecha del documento</td></tr>
+          <tr><td><code>{Zahlungslink}</code></td><td>enlace para pagar con Bitcoin, Lightning o USDT (véase <a href="#krypto">Pago con criptomonedas</a>)</td></tr>
+        </tbody>
+      </table></div>
+      <p>Los nombres de los marcadores son alemanes en todos los idiomas. Cada envío figura en el <strong>registro de envíos</strong> (<span class="path">Ajustes → Correo electrónico → Mostrar registro</span>) con hora, destinatario, asunto, adjuntos y estado, p. ej. «enviado» o «entregado al programa de correo».</p>
+    </section>
+
+    <section id="erinnerungen">
+      <h2>Recordatorios por correo y SMS</h2>
+      <p class="lead">OpenWerkstatt recuerda la HU (ITV alemana), las revisiones y otros vencimientos de vehículos por carta, correo o SMS. Cada recordatorio queda registrado para que ningún cliente lo reciba dos veces.</p>
+      <h3>Cómo funciona</h3>
+      <ol class="steps">
+        <li><div><strong>Abrir la lista</strong><span><span class="path">Informes → Vencimientos de vehículos</span>, elija el vencimiento (p. ej. HU) y el período. La columna «último recordatorio» muestra quién ya ha recibido uno y por qué canal.</span></div></li>
+        <li><div><strong>Elegir el canal</strong><span>«Cartas de recordatorio» imprime cartas; «Recordar por correo» y «Recordar por SMS» envían a todos los vehículos adecuados de la lista.</span></div></li>
+        <li><div><strong>Confirmar</strong><span>OpenWerkstatt indica el número. Los vehículos ya recordados se omiten por defecto. Después, un resumen muestra qué se ha enviado, omitido o fallado.</span></div></li>
+      </ol>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Se omite si …</th><th>Solución</th></tr></thead>
+        <tbody>
+          <tr><td>no hay dirección de correo o número de móvil</td><td>indíquelo en el cliente. Para SMS cuenta el campo «Móvil» o, si contiene un móvil, «Teléfono». Los fijos no pueden recibir SMS.</td></tr>
+          <tr><td>el cliente tiene «Sin recordatorios por correo/SMS»</td><td>casilla en el apartado «Contacto» del cliente. Las cartas las sigue recibiendo.</td></tr>
+          <tr><td>el vehículo no tiene titular</td><td>asigne el vehículo a un cliente</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Textos</h3>
+      <p>En <span class="path">Ajustes → Recordatorios y SMS</span> están el asunto y el texto del correo y el texto del SMS. Marcadores: <code>{Briefanrede}</code> <code>{Anrede}</code> <code>{Name}</code> <code>{Vorname}</code> <code>{Kennzeichen}</code> <code>{Fahrzeug}</code> <code>{Termin}</code> <code>{Terminart}</code> <code>{Firma}</code> <code>{Telefon}</code>. Un SMS tiene 160 caracteres. Los textos más largos se envían en varias partes y cuestan más.</p>
+      <p>Los correos usan el modo de envío de la pestaña «Correo electrónico». Con el envío directo (SMTP), OpenWerkstatt los envía todos a la vez. Con «Pasar al programa de correo» se abre una ventana por recordatorio, por eso como máximo 20 a la vez.</p>
+      <h3>Pasarela SMS: tres opciones</h3>
+      <p>OpenWerkstatt envía los SMS mediante una pasarela. En <span class="path">Ajustes → Recordatorios y SMS → Plantilla</span> hay una plantilla para cada opción que solo tiene que ajustar. Compruebe la configuración con «Guardar ajustes y enviar SMS de prueba».</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Opción</th><th>Necesita</th><th>Conviene saber</th></tr></thead>
+        <tbody>
+          <tr><td>Módem USB en otro ordenador (relé SMS de OpenWerkstatt)</td><td>un ordenador (p. ej. Raspberry Pi), un módem USB con modo módem, una tarjeta SIM, el programa <code>gammu</code></td><td>El relé viene con OpenWerkstatt en la carpeta <code>sms-relais</code> con sus propias instrucciones. Coste corriente solo de la tarjeta SIM.</td></tr>
+          <tr><td>Móvil Android antiguo</td><td>móvil con tarjeta SIM y una app de pasarela, p. ej. «SMS Gateway for Android»</td><td>No hace falta otro ordenador. El móvil debe estar en la misma red y encendido. La dirección y las credenciales aparecen en la app.</td></tr>
+          <tr><td>Proveedor de SMS en internet</td><td>cuenta de cliente, p. ej. en seven.io, y su clave API</td><td>Sin hardware. Coste por SMS. Otros proveedores también se pueden conectar mediante los campos libres (dirección, cabeceras, contenido).</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note warn"><strong>UMTS está apagado</strong><span>En Alemania todos los operadores apagaron UMTS (3G) en 2021/2022. Un módem solo UMTS envía SMS únicamente por la antigua red GSM mientras siga en servicio. Mejor use un módem LTE que pueda registrarse como módem. Para SMS no necesita datos.</span></div>
+      <div class="note"><strong>Consentimiento</strong><span>Los recordatorios por correo o SMS son publicidad según el derecho de competencia alemán. Escriba solo a clientes que lo hayan aceptado y anote de inmediato las bajas con la casilla «Sin recordatorios». En caso de duda, consulte a su asesor jurídico.</span></div>
+      <p>Todos los recordatorios figuran en el <strong>registro de recordatorios</strong> (<span class="path">Ajustes → Recordatorios y SMS</span>) con hora, vehículo, canal, destinatario y estado. Los correos figuran además en el registro de envíos de correo.</p>
+    </section>
+
+    <section id="messenger">
+      <h2>WhatsApp Business y Telegram</h2>
+      <p class="lead">Con WhatsApp Business y Telegram envía a sus clientes recordatorios de los vencimientos del vehículo, documentos en PDF y el aviso «vehículo listo» directamente al móvil.</p>
+      <h3>¿Dónde está cada cosa?</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Función</th><th>Dónde</th></tr></thead>
+        <tbody>
+          <tr><td>Recordatorio de HU, revisión …</td><td><span class="path">Informes → Vencimientos de vehículos</span> → «Recordar por WhatsApp» o «Recordar por Telegram»</td></tr>
+          <tr><td>Documento en PDF (presupuesto, orden de trabajo, albarán, factura …)</td><td>en el documento, en «PDF / correo», o en el menú contextual de la lista → «Enviar por WhatsApp…» o «Enviar por Telegram…»</td></tr>
+          <tr><td>Vehículo listo</td><td>el botón «Avisar listo» de la orden de trabajo. También funciona por SMS.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Todos los mensajes figuran en el <strong>registro de mensajes</strong> (<span class="path">Ajustes → WhatsApp y Telegram</span>); los recordatorios, además, en el registro de recordatorios.</p>
+      <h3>Configurar WhatsApp Business</h3>
+      <ol class="steps">
+        <li><div><strong>Cuenta en Meta</strong><span>Necesita una cuenta de WhatsApp Business con la WhatsApp Cloud API (developers.facebook.com) y un número de teléfono propio para ella. La aplicación normal WhatsApp Business del móvil no basta.</span></div></li>
+        <li><div><strong>Introducir los datos de acceso</strong><span>Introduzca el ID del número de teléfono y un token de acceso permanente (usuario del sistema) en <span class="path">Ajustes → WhatsApp y Telegram</span>. «Enviar mensaje de prueba» envía la plantilla «hello_world».</span></div></li>
+        <li><div><strong>Crear plantillas</strong><span>En WhatsApp, los mensajes a clientes deben ser plantillas aprobadas por Meta. Cree tres plantillas en el Administrador de WhatsApp e introduzca sus nombres (por defecto: <code>fahrzeugtermin</code>, <code>beleg</code>, <code>fahrzeug_fertig</code>).</span></div></li>
+      </ol>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Plantilla</th><th>Variables en este orden</th></tr></thead>
+        <tbody>
+          <tr><td>Recordatorio</td><td>1 nombre, 2 tipo de cita, 3 matrícula, 4 fecha, 5 empresa, 6 teléfono</td></tr>
+          <tr><td>Documento</td><td>encabezado de tipo «Documento» (el PDF), 1 nombre, 2 tipo de documento, 3 número, 4 empresa</td></tr>
+          <tr><td>Vehículo listo</td><td>1 nombre, 2 matrícula, 3 empresa, 4 teléfono</td></tr>
+        </tbody>
+      </table></div>
+      <p>WhatsApp se envía al número móvil del cliente (campo «Móvil» o, si contiene un móvil, «Teléfono»). Meta cobra los mensajes de plantilla según el país y la categoría.</p>
+      <h3>Configurar Telegram</h3>
+      <ol class="steps">
+        <li><div><strong>Crear un bot</strong><span>En Telegram abra <code>@BotFather</code>, envíe <code>/newbot</code> y elija un nombre. Introduzca el token en <span class="path">Ajustes → WhatsApp y Telegram</span> y pulse «Comprobar el bot».</span></div></li>
+        <li><div><strong>Conectar clientes</strong><span>Un bot no puede escribir a un número de teléfono. La primera vez que envía, OpenWerkstatt muestra un código QR y un enlace. El cliente lo escanea, pulsa «Iniciar» en Telegram y queda conectado. En la ficha del cliente, en «Contacto», se ve con quién.</span></div></li>
+        <li><div><strong>Darse de baja</strong><span>Si el cliente escribe <code>/stop</code> al bot, deja de recibir mensajes.</span></div></li>
+      </ol>
+      <p>Los textos de «vehículo listo» y el texto adjunto a los documentos se ajustan en <span class="path">Ajustes → WhatsApp y Telegram</span>. Los recordatorios por Telegram usan el texto del SMS. OpenWerkstatt consulta al bot cada 20 segundos; solo necesita internet, no una dirección pública.</p>
+      <div class="note"><strong>Consentimiento</strong><span>También por WhatsApp y Telegram los recordatorios son publicidad. Escriba solo a clientes que lo hayan aceptado. La casilla «Sin recordatorios» del cliente vale para todos los canales.</span></div>
+    </section>
+
+    <section id="krypto">
+      <h2>Pago con criptomonedas: Bitcoin, Lightning, USDT</h2>
+      <p class="lead">Los clientes pueden pagar las facturas con Bitcoin, Lightning o USDT. OpenWerkstatt utiliza para ello su propio <strong>BTCPay Server</strong>, un software libre y gratuito que no custodia dinero: los pagos van directamente a su propio monedero. La función está incluida gratis en OpenWerkstatt.</p>
+      <h3>Configurar una vez</h3>
+      <ol class="steps">
+        <li><div><strong>Disponer de un BTCPay Server</strong><span>El servidor debe ser accesible desde internet para que los clientes puedan pagar. Lo habitual es un servidor alquilado con la instalación Docker oficial (docs.btcpayserver.org) o un proveedor que opere BTCPay. Cree allí una tienda y conecte su monedero. Para Lightning necesita un nodo Lightning; para USDT, la red Liquid.</span></div></li>
+        <li><div><strong>Crear una clave API</strong><span>En BTCPay, en <span class="path">Cuenta → Claves API</span>. Permisos necesarios: ver y modificar solicitudes de pago; ver, crear y modificar facturas; ver ajustes de la tienda. El ID de la tienda figura en los ajustes de la tienda.</span></div></li>
+        <li><div><strong>Introducirlo en OpenWerkstatt</strong><span><span class="path">Ajustes → Pago con criptomonedas</span>: active los pagos con criptomonedas, introduzca dirección, ID de la tienda y clave API y pulse «Guardar y probar la conexión». OpenWerkstatt muestra las formas de pago activas en la tienda.</span></div></li>
+        <li><div><strong>Aclarar la contabilidad</strong><span>OpenWerkstatt registra los cobros en la cuenta contable configurada, por defecto 1360 (dinero en tránsito, SKR03). Acuerde la cuenta con su asesor fiscal.</span></div></li>
+      </ol>
+      <h3>Así funciona un pago</h3>
+      <ul>
+        <li>Abra la factura, pestaña <span class="path">Pagos</span>, «Enlace de pago». OpenWerkstatt crea en BTCPay una página de pago por el importe pendiente en euros. Es válida 30 días (ajustable).</li>
+        <li>El código QR y el enlace aparecen luego automáticamente en la factura PDF y en el correo. En sus propias plantillas de correo, <code>{Zahlungslink}</code> inserta el enlace.</li>
+        <li>El cliente paga el importe en euros con Bitcoin, Lightning o USDT, al tipo de cambio del día del pago.</li>
+        <li>OpenWerkstatt consulta BTCPay cada 2 minutos y registra automáticamente las facturas pagadas, con la forma de pago «Krypto (BTCPay)». Con «Comprobar pago» se hace al momento.</li>
+        <li>Si cambia el importe pendiente, p. ej. por un pago parcial por transferencia, el enlace antiguo desaparece del PDF. Cree entonces uno nuevo. Si la factura se paga por completo de otra forma, OpenWerkstatt cierra la página de pago en BTCPay.</li>
+      </ul>
+      <p>OpenWerkstatt no necesita ser accesible desde internet para esto. Consulta él mismo a BTCPay.</p>
+      <h3>En la caja</h3>
+      <ul>
+        <li>Si el pago con criptomonedas está configurado, la caja muestra el botón <strong>«₿ Bitcoin / Lightning»</strong>. «Cobrar orden» y «Cobrar factura» ofrecen entonces también «Cripto».</li>
+        <li>La caja muestra un código QR, primero para Lightning y, si se desea, para Bitcoin o USDT. El cliente lo escanea con su monedero. El tipo de cambio queda fijo 15 minutos.</li>
+        <li>En cuanto BTCPay comunica el pago, la ventana se cierra y se imprime el tique. Bitcoin on-chain cuenta en cuanto el pago está en la red, sin esperar confirmación. Lightning llega en segundos.</li>
+        <li>OpenWerkstatt comprueba el pago en BTCPay antes de emitir el tique. Solo entonces se crean factura y tique. Cada pago solo puede usarse para un tique.</li>
+        <li><strong>Cancelar:</strong> OpenWerkstatt marca el pago como no válido en BTCPay. Para ello la clave API necesita además el permiso «modificar facturas». Sin él, el pago caduca a los 15 minutos. Si el cliente paga de todos modos, la caja muestra un aviso al abrirse. Reembolse entonces el importe a través de BTCPay.</li>
+        <li><strong>Anulación:</strong> OpenWerkstatt registra la devolución. El dinero se reembolsa en BTCPay con la función «Reembolsar» (Refund) de la factura, o en efectivo.</li>
+        <li>Los pagos con criptomonedas no son en efectivo. No van al libro de caja, la TSE los firma como «no efectivo» y en la exportación DSFinV-K figuran como «Unbar / Krypto».</li>
+      </ul>
+    </section>
+
+    <section id="netzwerk">
+      <h2>Modo red</h2>
+      <p>Para que las tabletas y otros puestos puedan usar OpenWerkstatt, inicie en el PC del taller <span class="path">Menú Inicio → OpenWerkstatt (red)</span> (Linux/macOS: <code>openwerkstatt --netzwerk</code>).</p>
+      <ol>
+        <li>La ventana de consola muestra la dirección para los demás dispositivos, p. ej. <code>http://192.168.1.20:3700</code>.</li>
+        <li>Abra esa dirección en el navegador de la tableta.</li>
+        <li>Si Windows pide permiso del cortafuegos, permítalo para «Redes privadas».</li>
+      </ol>
+      <div class="note warn"><strong>Obligatorio en red</strong><span>Active el inicio de sesión (<span class="path">Ajustes → Valores predeterminados</span>) y cree usuarios. De lo contrario, cualquier dispositivo de la red puede abrir OpenWerkstatt sin contraseña.</span></div>
+      <p>Cada puesto puede elegir su propio idioma de interfaz. La entrega a Thunderbird solo funciona en el propio PC del taller. Desde otros dispositivos use el envío directo por SMTP.</p>
+    </section>
+
+    <section id="sicherung">
+      <h2>Copias de seguridad y carpeta de datos</h2>
+      <p>Los datos nunca están en la carpeta del programa, sino en el perfil de usuario. Las actualizaciones no los tocan; al desinstalar usted decide si se conservan.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Sistema</th><th>Carpeta de datos</th></tr></thead>
+        <tbody>
+          <tr><td>Windows</td><td><code>%APPDATA%\OpenWerkstatt</code> (p. ej. <code>C:\Users\&lt;nombre&gt;\AppData\Roaming\OpenWerkstatt</code>)</td></tr>
+          <tr><td>macOS</td><td><code>~/Library/Application Support/OpenWerkstatt</code></td></tr>
+          <tr><td>Linux</td><td><code>~/.local/share/openwerkstatt</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>En la carpeta de datos están, entre otros, la base de datos <code>openwerkstatt.db</code>, documentos e imágenes (<code>dateien</code>), copias automáticas (<code>sicherungen</code>), copias previas a las importaciones (<code>sicherheitskopien</code>) y los adjuntos para el programa de correo (<code>mail-ausgang</code>).</p>
+      <h3>Hacer copias</h3>
+      <ul>
+        <li><strong>A mano:</strong> <span class="path">OpenWerkstatt → Copia de seguridad</span> crea un archivo <code>*.openwerkstatt</code> con la base de datos y los documentos. Con contraseña se cifra con AES-256.</li>
+        <li><strong>Automáticamente:</strong> OpenWerkstatt hace una copia diaria en la carpeta <code>sicherungen</code>. La carpeta y el número de copias conservadas (predeterminado 14) se configuran en la misma página.</li>
+        <li><strong>Carpeta completa:</strong> también puede copiar toda la carpeta de datos con OpenWerkstatt detenido.</li>
+      </ul>
+      <div class="note"><strong>Recomendación</strong><span>Ponga la carpeta de copias en otra unidad, un NAS o una memoria USB. Una copia en el mismo disco no sirve si ese disco falla.</span></div>
+      <div class="note warn"><strong>La carpeta de datos no va en una unidad de red</strong><span>Las copias van al NAS; la carpeta de datos, no. OpenWerkstatt trabaja continuamente en su base de datos, y a través de una unidad compartida puede dañarse, p. ej. por un corte breve de la red. Si la carpeta de datos está en una unidad de red, OpenWerkstatt avisa al iniciarse. Para varios puestos use el <a href="#netzwerk">modo red</a>: un ordenador guarda los datos y los demás trabajan en el navegador.</span></div>
+    </section>
+
+    <section id="update">
+      <h2>Actualizar y desplegar</h2>
+      <h3>Saber si hay una versión nueva</h3>
+      <p>Como máximo una vez al día OpenWerkstatt consulta en GitHub si hay una versión más reciente. Si la hay, aparece abajo a la derecha, en la barra de estado, <strong>⬆ Actualización disponible</strong>. Al hacer clic se muestran la nueva versión, el enlace de descarga y los pasos para actualizar. También <span class="path">Ayuda → Acerca de OpenWerkstatt</span> indica si usa la versión más reciente.</p>
+      <p>Solo se consulta el número de versión. No se transmite ningún dato de OpenWerkstatt y una actualización nunca se instala automáticamente. En <span class="path">Ajustes → Valores predeterminados → Actualizaciones</span> puede desactivar la comprobación para cada empresa o ejecutarla al momento con <strong>Comprobar ahora</strong>. La variable de entorno <code>OPENWERKSTATT_UPDATE_CHECK=0</code> la desactiva para todo el servidor.</p>
+      <h3>Instalar una actualización</h3>
+      <p>Para actualizar, simplemente ejecute el nuevo instalador. Se encarga de todo:</p>
+      <ol class="steps">
+        <li><div><strong>Buscar un OpenWerkstatt en marcha</strong><span>El instalador busca procesos de OpenWerkstatt de la carpeta del programa, incluida la ventana de consola.</span></div></li>
+        <li><div><strong>Detenerlo limpiamente</strong><span>Se pide a OpenWerkstatt que se detenga, y cierra la base de datos correctamente. Si no responde, se fuerza el cierre.</span></div></li>
+        <li><div><strong>Instalar la actualización</strong><span>Se sustituyen los archivos del programa. Los datos del perfil de usuario no cambian.</span></div></li>
+        <li><div><strong>Volver a iniciar</strong><span>OpenWerkstatt se inicia en el mismo modo que antes (local o red). Se abre una pestaña nueva en el navegador.</span></div></li>
+      </ol>
+      <h3>Desplegar sin preguntas</h3>
+      <p>Para scripts o distribución de software:</p>
+      <div class="codeblock"><pre><code>OpenWerkstatt-Setup-2.1.0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART</code></pre></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Opción</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td><code>/VERYSILENT</code></td><td>sin ventanas</td></tr>
+          <tr><td><code>/SUPPRESSMSGBOXES</code></td><td>sin preguntas</td></tr>
+          <tr><td><code>/NORESTART</code></td><td>no reiniciar Windows</td></tr>
+          <tr><td><code>/ALLUSERS</code> · <code>/CURRENTUSER</code></td><td>instalar para todos los usuarios o solo para el actual (predeterminado: como en la primera instalación)</td></tr>
+          <tr><td><code>/NOSTART</code></td><td>no volver a iniciar OpenWerkstatt tras la actualización</td></tr>
+          <tr><td><code>/LOG="C:\Temp\openwerkstatt-setup.log"</code></td><td>escribir un registro de la instalación</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Actualizar desde la versión 1.0.0</strong><span>La versión 1.0.0 aún no conoce el cierre limpio. En la primera actualización desde ella, OpenWerkstatt se cierra a la fuerza. Los datos no sufren daños.</span></div>
+      <div class="note warn"><strong>Cuenta del sistema</strong><span>Si la instalación se ejecuta con la cuenta del sistema (típico en la distribución de software), OpenWerkstatt se detiene pero no se vuelve a iniciar. De lo contrario se ejecutaría en el perfil equivocado con datos vacíos. Los usuarios inician luego OpenWerkstatt desde el menú Inicio como siempre.</span></div>
+      <p><strong>Linux / macOS:</strong> obtenga la nueva versión (<code>git pull</code> o archivo) y ejecute de nuevo <code>./installer/unix/install.sh</code>.</p>
+    </section>
+
+    <section id="deinstallation">
+      <h2>Desinstalación</h2>
+      <ul>
+        <li><strong>Windows:</strong> <span class="path">Configuración → Aplicaciones → OpenWerkstatt</span> o menú Inicio <span class="path">Desinstalar OpenWerkstatt</span>. Antes se detiene un OpenWerkstatt en marcha y se elimina la regla del cortafuegos.</li>
+        <li><strong>Linux / macOS:</strong> <code>./installer/unix/install.sh --uninstall</code></li>
+      </ul>
+      <p>En Windows también puede volver a iniciar el instalador: si OpenWerkstatt ya está instalado, ofrece actualizar o desinstalar.</p>
+      <p>Después OpenWerkstatt pregunta si también se borran los datos. Por defecto <strong>se conservan</strong>. Si los borra, puede guardar antes una copia: en Windows como ZIP en el escritorio, en Linux/macOS como <code>.tar.gz</code> en la carpeta personal. Si la copia falla, no se borra nada. Tenga en cuenta los plazos de conservación: facturas y datos de caja suelen conservarse hasta 10 años.</p>
+      <p>Para herramientas de distribución: <code>unins000.exe /VERYSILENT</code> conserva los datos, <code>/DELETEDATA</code> los borra tras una copia, con <code>/NOBACKUP</code> sin copia. En Linux/macOS use <code>--delete-data</code> y <code>--no-backup</code>.</p>
+    </section>
+
+    <section id="beachten">
+      <h2>Importante</h2>
+      <p>Todos los avisos de este manual de un vistazo. Cada punto se explica en el capítulo enlazado.</p>
+      <div class="modules">
+        <div class="module"><h3>Datos y copias</h3><div class="where"><a href="#sicherung">Copias de seguridad</a> · <a href="#datenuebernahme">Importar datos</a></div>
+          <ul>
+            <li>No ponga nunca la carpeta de datos en una unidad de red o NAS. OpenWerkstatt avisa al iniciarse.</li>
+            <li>Las copias, en cambio, a otra unidad, un NAS o una memoria USB.</li>
+            <li>Una importación de KFZ-Faktura sustituye clientes, facturas, etc. por el estado de la copia. Los datos propios de OpenWerkstatt se conservan.</li>
+            <li>No trabaje mucho tiempo en paralelo en KFZ-Faktura y OpenWerkstatt. Las facturas de OpenWerkstatt, también las de la caja, se sobrescriben con la siguiente importación.</li>
+            <li>Antes de cada importación OpenWerkstatt crea una copia de seguridad.</li>
+          </ul></div>
+        <div class="module"><h3>Red y contenedor</h3><div class="where"><a href="#netzwerk">Modo red</a> · <a href="#installation">Instalación</a></div>
+          <ul>
+            <li>En modo red y en el contenedor, active de inmediato el inicio de sesión y cree usuarios.</li>
+            <li>Para varios puestos use el modo red. No hay base de datos externa.</li>
+            <li>Para los tipos del dólar, la libra, el franco y el bitcoin en el resumen, el ordenador de OpenWerkstatt necesita internet (BCE, Bitstamp). Son solo visualización; las facturas siguen en la moneda de la empresa.</li>
+            <li>En el contenedor no hay programa de correo. Envíe allí por SMTP.</li>
+            <li>La imagen de contenedor aún no se ha construido en un entorno Docker o Podman real. Compruébelo en el primer uso.</li>
+          </ul></div>
+        <div class="module"><h3>Correo</h3><div class="where"><a href="#email">Envío de correos</a></div>
+          <ul>
+            <li>La entrega a Thunderbird solo funciona en el PC donde se ejecuta OpenWerkstatt.</li>
+            <li>La factura cuenta como «enviada por correo» en cuanto se entrega, aunque el correo no se envíe en Thunderbird.</li>
+            <li>Si Thunderbird tiene firma propia, aparecen dos firmas. Vacíe una de ellas.</li>
+            <li>Los adjuntos entregados se guardan en <code>mail-ausgang</code> y se borran a los 14 días.</li>
+            <li>Con el envío directo por SMTP, el correo no aparece en Thunderbird. Para eso están el registro de envíos o una copia CCO.</li>
+            <li>Recordatorios por correo o SMS solo a clientes que lo hayan aceptado. Anote las bajas con «Sin recordatorios» en el cliente.</li>
+            <li>Para SMS use un módem LTE en lugar de uno UMTS. Compruebe si su tarifa permite envíos masivos.</li>
+          </ul></div>
+        <div class="module"><h3>DATEV</h3><div class="where"><a href="#datev">Exportación DATEV</a></div>
+          <ul>
+            <li>La primera vez, pida al asesor que importe ambos archivos de prueba.</li>
+            <li>Exporte cada ejercicio por separado.</li>
+            <li>Los justificantes (PDF) no se incluyen y deben seguir enviándose aparte al asesor.</li>
+            <li>Pida revisar los asientos antiguos de clientes o proveedores con número corto.</li>
+            <li>Active las claves BU solo si el asesor usa cuentas sin función automática.</li>
+            <li>Con SKR04, acuerde las cuentas con el asesor.</li>
+          </ul></div>
+        <div class="module"><h3>Actualización e instalación</h3><div class="where"><a href="#update">Actualizar</a> · <a href="#deinstallation">Desinstalación</a></div>
+          <ul>
+            <li>El instalador detiene un OpenWerkstatt en marcha y lo vuelve a iniciar después. Se abre una pestaña nueva en el navegador.</li>
+            <li>Con la cuenta del sistema (distribución de software), OpenWerkstatt no se vuelve a iniciar.</li>
+            <li>La primera actualización desde la versión 1.0.0 cierra OpenWerkstatt a la fuerza. Los datos quedan intactos.</li>
+            <li>Las actualizaciones no tocan la carpeta de datos; al desinstalar se pregunta. Cada usuario de Windows tiene la suya.</li>
+          </ul></div>
+        <div class="module"><h3>Caja y legislación</h3><div class="where"><a href="#grenzen">Avisos y límites</a></div>
+          <ul>
+            <li>Compruebe la TSE con una cuenta de prueba de fiskaly antes de usarla en real y comunique la caja a Hacienda (alemana).</li>
+            <li>Compruebe el terminal de tarjetas y la DSFinV-K antes de usarlos o de una inspección.</li>
+            <li>OpenWerkstatt está pensado para Alemania, España, el Reino Unido, Estados Unidos, Francia, Austria, Suiza, Italia, los Países Bajos, Bélgica y Luxemburgo (vea <a href="#spanien">España</a>, <a href="#uk">Reino Unido</a>, <a href="#usa">Estados Unidos</a>, <a href="#frankreich">Francia</a>, <a href="#oesterreich">Austria</a>, <a href="#schweiz">Suiza</a>, <a href="#italien">Italia</a>, <a href="#niederlande">Países Bajos</a>, <a href="#belgien">Bélgica</a> y <a href="#luxemburg">Luxemburgo</a>). TicketBAI, Navarra e IGIC no están soportados.</li>
+            <li>Los contratos de compraventa son modelos y no sustituyen el asesoramiento jurídico.</li>
+          </ul></div>
+      </div>
+    </section>
+
+    <section id="probleme">
+      <h2>Preguntas y problemas frecuentes</h2>
+      <dl class="faq">
+        <div><dt>Al iniciar aparece «OpenWerkstatt ya se está ejecutando en el puerto 3700».</dt><dd>OpenWerkstatt ya está en marcha, p. ej. en otra ventana de consola. El navegador abre el OpenWerkstatt en marcha y la nueva ventana se cierra sola.</dd></div>
+        <div><dt>«No se encontró Node.js».</dt><dd>Solo ocurre sin el instalador. Instale Node.js LTS desde nodejs.org o use el instalador de Windows, que incluye Node.js.</dd></div>
+        <div><dt>La tableta no accede a OpenWerkstatt.</dt><dd>OpenWerkstatt debe haberse iniciado con «OpenWerkstatt (red)» («OpenWerkstatt im Netzwerk» con el instalador en alemán). Compruebe la dirección que muestra la ventana de consola y el permiso del cortafuegos para redes privadas. Tableta y PC deben estar en la misma red.</dd></div>
+        <div><dt>«No se encontró Thunderbird».</dt><dd>Indique la ruta de <code>thunderbird.exe</code> en <span class="path">Ajustes → Correo electrónico</span>, p. ej. <code>C:\Program Files\Mozilla Thunderbird\thunderbird.exe</code>.</dd></div>
+        <div><dt>«El programa de correo solo puede abrirse en el ordenador donde se ejecuta OpenWerkstatt».</dt><dd>Está trabajando en otro dispositivo de la red. Envíe allí por SMTP o abra el correo en el PC del taller.</dd></div>
+        <div><dt>«No se ha configurado ningún servidor de correo».</dt><dd>El modo de envío es SMTP, pero faltan los datos del servidor. Indíquelos en <span class="path">Ajustes → Correo electrónico</span> o cambie a «Pasar al programa de correo».</dd></div>
+        <div><dt>Las facturas impresas ya no se pueden modificar.</dt><dd>El bloqueo GoBD está activo (<span class="path">Ajustes → Valores predeterminados</span>). Los cambios se hacen entonces con una factura rectificativa.</dd></div>
+        <div><dt>Exportación DATEV: «El período sobrepasa el ejercicio».</dt><dd>DATEV solo acepta asientos de un ejercicio. Exporte por separado, p. ej. hasta el 31.12 y desde el 01.01. Para un ejercicio distinto, indique el mes de inicio en <span class="path">Ajustes → Contabilidad</span>.</dd></div>
+        <div><dt>Exportación DATEV: «Cuentas no válidas para DATEV».</dt><dd>Un asiento tiene una cuenta con demasiados dígitos o sin número. Revise los documentos indicados y las cuentas en <span class="path">Ajustes → Contabilidad</span>, sobre todo la longitud de las cuentas.</dd></div>
+        <div><dt>Los datos han desaparecido tras la actualización.</dt><dd>Las actualizaciones no tocan la carpeta de datos. Compruebe si OpenWerkstatt se ejecuta con otro usuario de Windows. Cada usuario tiene su propia carpeta de datos.</dd></div>
+        <div><dt>Una parte de la pantalla sigue en alemán.</dt><dd>Puede que algunos textos aún no estén traducidos. Comunique las traducciones que falten, véase <code>CONTRIBUTING.md</code>.</dd></div>
+      </dl>
+    </section>
+
+    <section id="rechnungsnummern">
+      <h2>Números de factura</h2>
+      <p>Los números de factura son correlativos, como en KFZ-Faktura. OpenWerkstatt asigna el número al guardar: último número asignado más 1. Por eso el campo del número de factura está bloqueado. En una factura nueva solo muestra una sugerencia. Si otro puesto guarda antes una factura, la suya recibe el siguiente número libre.</p>
+      <ul>
+        <li><strong>Series propias:</strong> las facturas y las facturas rectificativas (también anulaciones y abonos) se numeran por separado. Los ajustes están en <span class="path">Ajustes → Series de numeración</span>.</li>
+        <li><strong>Tras importar de KFZ-Faktura</strong> OpenWerkstatt continúa desde el último número asignado.</li>
+        <li><strong>Sin reinicio a fin de año:</strong> los números simplemente continúan. Una base de datos nueva empieza en año + 0001, p. ej. 20260001.</li>
+      </ul>
+      <h3>Cómo pueden surgir huecos</h3>
+      <ul>
+        <li><strong>Factura no impresa eliminada:</strong> el número no se vuelve a asignar. Anote el motivo para poder explicar el hueco en una inspección. Mejor: no elimine la factura, anúlela.</li>
+        <li><strong>Serie aumentada a mano:</strong> quien introduce un número mayor en <span class="path">Ajustes → Series de numeración</span> se salta los números intermedios.</li>
+      </ul>
+      <p>Las facturas impresas o enviadas no se pueden eliminar, solo anular. La factura de anulación recibe un número de la serie de facturas rectificativas.</p>
+    </section>
+
+    <section id="grenzen">
+      <h2>Avisos y límites</h2>
+      <ul>
+        <li><strong>TSE:</strong> se admite la TSE en la nube de fiskaly (SIGN DE). Compruébela con una cuenta de prueba de fiskaly antes de usarla en real y comunique la caja a Hacienda. No se admiten TSE USB ni la RKSV austriaca.</li>
+        <li><strong>Terminal de tarjetas:</strong> ZVT por TCP/IP se ha probado con un terminal simulado, no con un aparato real.</li>
+        <li><strong>DSFinV-K:</strong> compruébela con la herramienta de verificación DSFinV-K antes de una inspección.</li>
+        <li><strong>Catálogos de recambios:</strong> las conexiones en directo con TecDoc, DAT o Elekat requieren licencias del fabricante y no están incluidas. Se importan cestas en CSV/DATANORM.</li>
+        <li><strong>Contrato de compraventa:</strong> los textos son un modelo y no sustituyen el asesoramiento jurídico.</li>
+        <li><strong>DATEV:</strong> el lote de asientos y los deudores/acreedores siguen el formato DATEV, pero no se han verificado en un programa DATEV. No se incluyen los justificantes (PDF) ni la conexión con DATEV Unternehmen online.</li>
+        <li><strong>Pago con criptomonedas:</strong> probado con un BTCPay Server simulado, aún no con uno real. USDT solo funciona mediante la red Liquid, como lo ofrece BTCPay. No se admite USDT en Tron ni en Ethereum.</li>
+        <li><strong>Contenedor:</strong> la imagen solo se ha comprobado fuera de un entorno Docker o Podman real.</li>
+        <li><strong>Base de datos:</strong> OpenWerkstatt usa una base de datos integrada (SQLite). No se admiten bases de datos externas como PostgreSQL. Varios puestos trabajan mediante el modo red.</li>
+        <li><strong>Países e idiomas:</strong> Alemania, España, el Reino Unido y Estados Unidos (se cambia por empresa). En España no se soportan TicketBAI, Navarra, IGIC ni el REBU en VERI*FACTU. La interfaz existe en alemán, inglés, español, francés, italiano y neerlandés.</li>
+      </ul>
+    </section>
+
+    <section id="technik">
+      <h2>Para administradores</h2>
+      <h3>Variables de entorno</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Variable</th><th>Predeterminado</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td><code>PORT</code></td><td><code>3700</code></td><td>puerto del servidor</td></tr>
+          <tr><td><code>HOST</code></td><td><code>127.0.0.1</code></td><td><code>0.0.0.0</code> comparte OpenWerkstatt en la red</td></tr>
+          <tr><td><code>OPENWERKSTATT_DATA</code></td><td>perfil de usuario</td><td>otra carpeta de datos en una unidad local, p. ej. un segundo disco. No la ponga en una unidad de red ni en un NAS (véase <a href="#sicherung">Copias de seguridad</a>).</td></tr>
+          <tr><td><code>OPENWERKSTATT_LANG</code></td><td>idioma de Windows</td><td><code>de</code>, <code>en</code>, <code>es</code>, <code>fr</code>, <code>it</code> o <code>nl</code>: idioma de la ventana de consola y de las instalaciones nuevas</td></tr>
+          <tr><td><code>OPENWERKSTATT_UPDATE_CHECK</code></td><td><code>1</code></td><td><code>0</code> desactiva el aviso de versiones nuevas, también «Comprobar ahora» (equipos sin internet, distribución de software)</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Desarrollo e instalador</h3>
+      <div class="codeblock"><pre><code>npm test                    # pruebas automáticas
+npm run server              # iniciar el servidor sin navegador
+npm run installer:windows   # crear el instalador de Windows</code></pre></div>
+      <p>Para el instalador se necesitan Windows, <a href="https://jrsoftware.org/isdl.php">Inno Setup 6</a> y acceso a internet (Node.js se descarga de nodejs.org y se verifica con SHA-256). El resultado queda en <code>build\OpenWerkstatt-Setup-&lt;versión&gt;.exe</code>; la versión sale de <code>package.json</code>.</p>
+      <p>Estructura: <code>server/</code> (servidor, lógica de negocio, importación, factura electrónica, PDF/A, correo, caja, copias), <code>public/</code> (interfaz), <code>installer/</code> (instalador de Windows, script de Linux/macOS). La base de datos es SQLite con los nombres de tablas y columnas de KFZ-Faktura. Los comentarios del código están en inglés. Las traducciones de la interfaz están en <code>public/js/lang/</code>; <code>node tools/i18n/missing.js</code> muestra las que faltan. Los datos de clientes y de la empresa nunca van en el repositorio.</p>
+    </section>
+  </main>
+
+  <footer>OpenWerkstatt 2.1.0 · © 2026 Doc · Código abierto bajo la GNU AGPL 3.0, todas las funciones gratuitas · Fuente de los documentos: Liberation Sans (SIL Open Font License) · Código QR: qrcode-generator (MIT)</footer>
+</div>
+
+<script>
+(function () {
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+  var toc = document.getElementById('toc'), tocM = document.getElementById('toc-m');
+  sections.forEach(function (s, i) {
+    var h = s.querySelector('h2');
+    var title = h.textContent.trim();
+    var no = document.createElement('span'); no.className = 'no'; no.textContent = String(i + 1).padStart(2, '0');
+    h.insertBefore(no, h.firstChild);
+    [toc, tocM].forEach(function (list) {
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = '#' + s.id; a.textContent = title; li.appendChild(a); list.appendChild(li);
+    });
+  });
+  tocM.addEventListener('click', function (e) { if (e.target.tagName === 'A') tocM.closest('details').open = false; });
+
+  var links = toc.querySelectorAll('a');
+  function mark() {
+    var cur = sections[0].id;
+    for (var i = 0; i < sections.length; i++) if (sections[i].getBoundingClientRect().top < 140) cur = sections[i].id;
+    links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+  }
+  window.addEventListener('scroll', mark, { passive: true }); mark();
+
+  document.querySelectorAll('.codeblock').forEach(function (b) {
+    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'copy'; btn.textContent = 'Copiar';
+    btn.addEventListener('click', function () {
+      var text = b.querySelector('code').textContent;
+      var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents(b.querySelector('code')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Seleccionado – Ctrl+C'; };
+      try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+    });
+    b.appendChild(btn);
+  });
+})();
+</script>

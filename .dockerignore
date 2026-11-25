@@ -1,0 +1,26 @@
+# Only server/, public/, docs/ (handbooks), package.json and the docs belong in the image (Podman reads this file too)
+.git
+.claude
+build
+installer
+test
+node_modules
+*.bat
+openwerkstatt.sh
+
+# never put data into the image
+data
+*.db
+*.db-wal
+*.db-shm
+*.openwerkstatt
+*.kft
+*.swb
+*.kfz
+*.fdb
+*.FDB
+*.fbk
+*.bak
+*.7z
+.env
+tools

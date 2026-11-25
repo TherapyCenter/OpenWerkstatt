@@ -1,0 +1,25 @@
+# dependencies / build
+node_modules/
+build/
+
+# data NEVER belongs in the repository (customer, company, register data)
+data/
+*.db
+*.db-wal
+*.db-shm
+*.openwerkstatt
+*.kft
+*.swb
+*.kfz
+*.fdb
+*.FDB
+*.fbk
+*.bak
+*.7z
+
+# local settings
+.claude/settings.local.json
+.env
+
+# never publish private keys
+*.pem
